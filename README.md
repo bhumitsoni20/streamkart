@@ -61,7 +61,3 @@ The frontend runs on `http://localhost:5173` and the backend on `http://localhos
 | Frontend | Vercel |
 | Backend | Render / Railway |
 | Database | MongoDB Atlas |
-
-## License
-
-MIT
