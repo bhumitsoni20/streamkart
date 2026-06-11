@@ -54,10 +54,6 @@ npm run dev
 
 The frontend runs on `http://localhost:5173` and the backend on `http://localhost:5000`.
 
-## Environment Variables
-
-See `frontend/.env.example` and `backend/.env.example` for required configuration.
-
 ## Deployment
 
 | Service | Platform |
