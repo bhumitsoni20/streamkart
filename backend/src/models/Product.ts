@@ -1,0 +1,103 @@
+import mongoose, { Schema, Document } from 'mongoose';
+
+export interface IProduct extends Document {
+  title: string;
+  description: string;
+  category: string;
+  logo: string;
+  price: number;
+  originalPrice?: number;
+  seller: mongoose.Types.ObjectId;
+  status: 'active' | 'inactive' | 'pending';
+  features: string[];
+  duration: string;
+  ratings: number;
+  totalReviews: number;
+  totalSales: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const productSchema = new Schema<IProduct>(
+  {
+    title: {
+      type: String,
+      required: [true, 'Title is required'],
+      trim: true,
+      maxlength: 200,
+    },
+    description: {
+      type: String,
+      required: [true, 'Description is required'],
+      maxlength: 2000,
+    },
+    category: {
+      type: String,
+      required: [true, 'Category is required'],
+      enum: [
+        'ott',
+        'ai-tools',
+        'vpn',
+        'education',
+        'software',
+        'cloud-storage',
+        'premium-membership',
+        'other',
+      ],
+    },
+    logo: {
+      type: String,
+      default: '',
+    },
+    price: {
+      type: Number,
+      required: [true, 'Price is required'],
+      min: 0,
+    },
+    originalPrice: {
+      type: Number,
+      min: 0,
+    },
+    seller: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'pending'],
+      default: 'pending',
+    },
+    features: {
+      type: [String],
+      default: [],
+    },
+    duration: {
+      type: String,
+      default: '1 month',
+    },
+    ratings: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
+    totalSales: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+productSchema.index({ title: 'text', description: 'text' });
+productSchema.index({ category: 1, status: 1 });
+productSchema.index({ seller: 1 });
+
+export const Product = mongoose.model<IProduct>('Product', productSchema);

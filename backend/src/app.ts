@@ -1,0 +1,58 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import { env } from './config/env';
+import { apiLimiter } from './middleware/rateLimiter';
+import { errorHandler } from './middleware/errorHandler';
+
+// Route imports
+import authRoutes from './routes/auth.routes';
+import productRoutes from './routes/product.routes';
+import orderRoutes from './routes/order.routes';
+import cartRoutes from './routes/cart.routes';
+import paymentRoutes from './routes/payment.routes';
+import notificationRoutes from './routes/notification.routes';
+import reviewRoutes from './routes/review.routes';
+import adminRoutes from './routes/admin.routes';
+
+const app = express();
+
+// ─── Security Middleware ────────────────────────────────
+app.use(helmet());
+app.use(
+  cors({
+    origin: env.CLIENT_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  })
+);
+app.use(apiLimiter);
+
+// ─── Body Parser ────────────────────────────────────────
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// ─── Health Check ───────────────────────────────────────
+app.get('/api/health', (_req, res) => {
+  res.json({ success: true, message: 'Prime Net API is running 🚀', timestamp: new Date().toISOString() });
+});
+
+// ─── API Routes ─────────────────────────────────────────
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/admin', adminRoutes);
+
+// ─── 404 Handler ────────────────────────────────────────
+app.use((_req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found.' });
+});
+
+// ─── Error Handler ──────────────────────────────────────
+app.use(errorHandler);
+
+export default app;

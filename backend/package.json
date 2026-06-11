@@ -1,0 +1,36 @@
+{
+  "name": "primenet-backend",
+  "version": "1.0.0",
+  "description": "Prime Net - Digital Subscription Marketplace API",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "marketplace",
+    "subscriptions",
+    "api"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "firebase-admin": "^14.0.0",
+    "helmet": "^8.2.0",
+    "mongoose": "^9.7.0",
+    "razorpay": "^2.9.6",
+    "stripe": "^22.2.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

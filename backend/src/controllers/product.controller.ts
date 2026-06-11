@@ -1,0 +1,131 @@
+import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
+import { Product } from '../models/Product';
+import { sendSuccess, sendError, sendPaginated } from '../utils/response';
+
+// GET /api/products
+export const getProducts = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 12;
+    const skip = (page - 1) * limit;
+
+    const filter: any = { status: 'active' };
+
+    if (req.query.category) filter.category = req.query.category;
+    if (req.query.search) {
+      filter.$text = { $search: req.query.search as string };
+    }
+    if (req.query.minPrice || req.query.maxPrice) {
+      filter.price = {};
+      if (req.query.minPrice) filter.price.$gte = parseFloat(req.query.minPrice as string);
+      if (req.query.maxPrice) filter.price.$lte = parseFloat(req.query.maxPrice as string);
+    }
+
+    const sort: any = {};
+    if (req.query.sort === 'price_asc') sort.price = 1;
+    else if (req.query.sort === 'price_desc') sort.price = -1;
+    else if (req.query.sort === 'rating') sort.ratings = -1;
+    else sort.createdAt = -1;
+
+    const [products, total] = await Promise.all([
+      Product.find(filter).populate('seller', 'name avatar').sort(sort).skip(skip).limit(limit),
+      Product.countDocuments(filter),
+    ]);
+
+    return sendPaginated(res, products, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// GET /api/products/:id
+export const getProduct = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('seller', 'name avatar email');
+    if (!product) return sendError(res, 'Product not found.', 404);
+    return sendSuccess(res, product);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// POST /api/products
+export const createProduct = async (req: AuthRequest, res: Response) => {
+  try {
+    const { title, description, category, logo, price, originalPrice, features, duration } = req.body;
+
+    const product = await Product.create({
+      title,
+      description,
+      category,
+      logo,
+      price,
+      originalPrice,
+      features,
+      duration,
+      seller: req.user._id,
+      status: 'pending',
+    });
+
+    return sendSuccess(res, product, 'Product created. Pending approval.', 201);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// PUT /api/products/:id
+export const updateProduct = async (req: AuthRequest, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return sendError(res, 'Product not found.', 404);
+
+    if (product.seller.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return sendError(res, 'Not authorized.', 403);
+    }
+
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    return sendSuccess(res, updated, 'Product updated.');
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// DELETE /api/products/:id
+export const deleteProduct = async (req: AuthRequest, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return sendError(res, 'Product not found.', 404);
+
+    if (product.seller.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return sendError(res, 'Not authorized.', 403);
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
+    return sendSuccess(res, null, 'Product deleted.');
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// GET /api/products/seller/me
+export const getSellerProducts = async (req: AuthRequest, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 12;
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      Product.find({ seller: req.user._id }).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Product.countDocuments({ seller: req.user._id }),
+    ]);
+
+    return sendPaginated(res, products, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};

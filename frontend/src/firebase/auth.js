@@ -1,0 +1,71 @@
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  updateProfile,
+} from 'firebase/auth';
+import { auth } from './config';
+
+const googleProvider = new GoogleAuthProvider();
+
+// Email Authentication
+export const signUpWithEmail = async (email, password, displayName) => {
+  const result = await createUserWithEmailAndPassword(auth, email, password);
+  if (displayName) {
+    await updateProfile(result.user, { displayName });
+  }
+  return result.user;
+};
+
+export const signInWithEmail = async (email, password) => {
+  const result = await signInWithEmailAndPassword(auth, email, password);
+  return result.user;
+};
+
+// Google Authentication
+export const signInWithGoogle = async () => {
+  const result = await signInWithPopup(auth, googleProvider);
+  return result.user;
+};
+
+// Phone OTP Authentication
+export const setupRecaptcha = (containerId) => {
+  const verifier = new RecaptchaVerifier(auth, containerId, {
+    size: 'invisible',
+  });
+  return verifier;
+};
+
+export const sendOTP = async (phoneNumber, recaptchaVerifier) => {
+  const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+  return confirmationResult;
+};
+
+export const verifyOTP = async (confirmationResult, otp) => {
+  const result = await confirmationResult.confirm(otp);
+  return result.user;
+};
+
+// Sign Out
+export const signOut = async () => {
+  await firebaseSignOut(auth);
+};
+
+// Auth State Observer
+export const onAuthChange = (callback) => {
+  return onAuthStateChanged(auth, callback);
+};
+
+// Get ID Token
+export const getIdToken = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    return await user.getIdToken();
+  }
+  return null;
+};

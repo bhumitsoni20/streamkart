@@ -1,0 +1,130 @@
+import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
+import { User } from '../models/User';
+import { Product } from '../models/Product';
+import { Order } from '../models/Order';
+import { sendSuccess, sendError, sendPaginated } from '../utils/response';
+
+// GET /api/admin/stats
+export const getDashboardStats = async (req: AuthRequest, res: Response) => {
+  try {
+    const [totalUsers, totalProducts, totalOrders, totalRevenue] = await Promise.all([
+      User.countDocuments(),
+      Product.countDocuments(),
+      Order.countDocuments(),
+      Order.aggregate([
+        { $match: { paymentStatus: 'paid' } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
+    ]);
+
+    const recentOrders = await Order.find()
+      .populate('user', 'name email')
+      .populate('product', 'title')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    return sendSuccess(res, {
+      totalUsers,
+      totalProducts,
+      totalOrders,
+      totalRevenue: totalRevenue[0]?.total || 0,
+      recentOrders,
+    });
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// GET /api/admin/users
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+    if (req.query.role) filter.role = req.query.role;
+    if (req.query.search) {
+      filter.$or = [
+        { name: { $regex: req.query.search, $options: 'i' } },
+        { email: { $regex: req.query.search, $options: 'i' } },
+      ];
+    }
+
+    const [users, total] = await Promise.all([
+      User.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      User.countDocuments(filter),
+    ]);
+
+    return sendPaginated(res, users, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// PUT /api/admin/users/:id/role
+export const updateUserRole = async (req: AuthRequest, res: Response) => {
+  try {
+    const { role } = req.body;
+    if (!['user', 'seller', 'admin'].includes(role)) {
+      return sendError(res, 'Invalid role.', 400);
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true }
+    );
+
+    if (!user) return sendError(res, 'User not found.', 404);
+    return sendSuccess(res, user, 'User role updated.');
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// PUT /api/admin/products/:id/status
+export const updateProductStatus = async (req: AuthRequest, res: Response) => {
+  try {
+    const { status } = req.body;
+    if (!['active', 'inactive', 'pending'].includes(status)) {
+      return sendError(res, 'Invalid status.', 400);
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!product) return sendError(res, 'Product not found.', 404);
+    return sendSuccess(res, product, 'Product status updated.');
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// GET /api/admin/orders
+export const getAllOrders = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      Order.find()
+        .populate('user', 'name email')
+        .populate('product', 'title price')
+        .populate('seller', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Order.countDocuments(),
+    ]);
+
+    return sendPaginated(res, orders, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
