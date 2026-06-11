@@ -3,18 +3,21 @@ import Rating from '../ui/Rating';
 
 const ReviewCard = ({ review }) => {
   return (
-    <div className="bg-gray-900/60 border border-white/5 rounded-xl p-4">
-      <div className="flex items-center gap-3 mb-3">
-        <Avatar src={review.user?.avatar} name={review.user?.name} size="sm" />
-        <div>
-          <p className="text-white text-sm font-medium">{review.user?.name}</p>
-          <Rating value={review.rating} size="sm" showValue={false} />
+    <div className="bg-white border border-gray-200 rounded-xl p-5">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <Avatar src={review.user?.avatar} name={review.user?.name} size="sm" />
+          <div>
+            <p className="text-gray-900 text-sm font-semibold">{review.user?.name}</p>
+            <p className="text-gray-400 text-xs">{review.user?.title || 'Verified Buyer'}</p>
+          </div>
         </div>
-        <span className="ml-auto text-xs text-gray-500">
+        <span className="text-gray-400 text-xs">
           {new Date(review.createdAt).toLocaleDateString()}
         </span>
       </div>
-      {review.comment && <p className="text-gray-400 text-sm">{review.comment}</p>}
+      <Rating value={review.rating} size="sm" showValue={false} />
+      {review.comment && <p className="text-gray-600 text-sm mt-3 leading-relaxed">"{review.comment}"</p>}
     </div>
   );
 };

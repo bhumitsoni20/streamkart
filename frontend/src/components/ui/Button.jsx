@@ -1,14 +1,15 @@
 const Button = ({ children, variant = 'primary', size = 'md', className = '', disabled = false, loading = false, onClick, type = 'button', ...props }) => {
   const variants = {
-    primary: 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25',
-    secondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/10',
-    danger: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white',
-    success: 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white',
-    ghost: 'bg-transparent hover:bg-white/5 text-gray-300',
+    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-200',
+    secondary: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm',
+    danger: 'bg-red-500 hover:bg-red-600 text-white',
+    success: 'bg-emerald-500 hover:bg-emerald-600 text-white',
+    ghost: 'bg-transparent hover:bg-gray-100 text-gray-600',
+    outline: 'bg-transparent hover:bg-indigo-50 text-indigo-600 border border-indigo-200',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
+    sm: 'px-3.5 py-1.5 text-sm',
     md: 'px-5 py-2.5 text-sm',
     lg: 'px-7 py-3 text-base',
   };
@@ -18,7 +19,7 @@ const Button = ({ children, variant = 'primary', size = 'md', className = '', di
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {loading && (

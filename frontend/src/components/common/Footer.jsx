@@ -1,50 +1,42 @@
 import { Link } from 'react-router-dom';
+import { FaTwitter, FaLinkedin, FaFacebook } from 'react-icons/fa';
 
 const Footer = () => {
+  const columns = [
+    { title: 'Prime Net', links: [{ label: 'Home', to: '/' }, { label: 'About Us', to: '/about' }, { label: 'Solutions', to: '/products' }, { label: 'AI Marketplace', to: '/products' }, { label: 'Login', to: '/login' }] },
+    { title: 'Marketplace', links: [{ label: 'Marketplace', to: '/products' }, { label: 'Features', to: '/about' }, { label: 'Enterprise', to: '/about' }, { label: 'Pricing', to: '/products' }, { label: 'Contact', to: '/contact' }] },
+    { title: 'Company', links: [{ label: 'About Us', to: '/about' }, { label: 'Upcoming', to: '/about' }, { label: 'Company', to: '/about' }, { label: 'Pricing', to: '/products' }, { label: 'Contact Us', to: '/contact' }] },
+    { title: 'Resources', links: [{ label: 'About', to: '/about' }, { label: 'Resources', to: '/about' }, { label: 'FAQs', to: '/contact' }, { label: 'Landing Page', to: '/' }] },
+    { title: 'Legal', links: [{ label: 'Legal', to: '/terms' }, { label: 'Contact', to: '/contact' }, { label: 'Events', to: '/about' }, { label: 'Privacy Policy', to: '/privacy' }, { label: 'Terms of Service', to: '/terms' }] },
+  ];
+
   return (
-    <footer className="bg-gray-950 border-t border-white/5 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm">PN</div>
-              <span className="text-xl font-bold text-white">Prime<span className="text-blue-400">Net</span></span>
+    <footer className="bg-white border-t border-gray-100 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+          {columns.map((col) => (
+            <div key={col.title}>
+              <h4 className="text-gray-900 font-semibold text-sm mb-4">{col.title}</h4>
+              <ul className="space-y-2.5">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <Link to={link.to} className="text-gray-500 hover:text-indigo-600 text-sm transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="text-gray-500 text-sm max-w-md">
-              Your trusted marketplace for digital subscriptions. Buy and sell premium services at the best prices.
-            </p>
-          </div>
-
-          {/* Links */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              {['Marketplace', 'About', 'Contact', 'Terms', 'Privacy'].map((link) => (
-                <li key={link}>
-                  <Link to={`/${link.toLowerCase()}`} className="text-gray-500 hover:text-white text-sm transition-colors">
-                    {link}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-4">Categories</h4>
-            <ul className="space-y-2">
-              {['OTT Platforms', 'AI Tools', 'VPN Services', 'Education', 'Software'].map((cat) => (
-                <li key={cat}>
-                  <span className="text-gray-500 text-sm">{cat}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          ))}
         </div>
 
-        <div className="border-t border-white/5 mt-8 pt-8 text-center">
-          <p className="text-gray-600 text-sm">
+        <div className="border-t border-gray-100 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors"><FaTwitter className="w-5 h-5" /></a>
+            <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors"><FaLinkedin className="w-5 h-5" /></a>
+            <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors"><FaFacebook className="w-5 h-5" /></a>
+          </div>
+          <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} Prime Net. All rights reserved.
           </p>
         </div>

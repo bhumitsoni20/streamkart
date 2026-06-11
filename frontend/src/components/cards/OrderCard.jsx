@@ -1,46 +1,25 @@
 import { Link } from 'react-router-dom';
 import Badge from '../ui/Badge';
-
-const statusVariant = {
-  placed: 'warning',
-  delivered: 'success',
-  cancelled: 'danger',
-};
-
-const paymentVariant = {
-  pending: 'warning',
-  paid: 'success',
-  failed: 'danger',
-  refunded: 'primary',
-};
+import { HiClipboardList } from 'react-icons/hi';
 
 const OrderCard = ({ order }) => {
   return (
     <Link to={`/dashboard/orders/${order._id}`} className="block">
-      <div className="bg-gray-900/80 border border-white/10 rounded-2xl p-5 hover:border-white/20 hover:shadow-lg transition-all duration-300">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-              {order.product?.logo ? (
-                <img src={order.product.logo} alt="" className="h-8 w-8 object-contain" />
-              ) : (
-                <span className="text-lg font-bold text-blue-400">{order.product?.title?.[0]}</span>
-              )}
-            </div>
-            <div>
-              <h4 className="text-white font-medium">{order.product?.title}</h4>
-              <p className="text-sm text-gray-500">Order #{order._id?.slice(-8)}</p>
-            </div>
-          </div>
-          <span className="text-lg font-bold text-white">₹{order.amount}</span>
+      <div className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all">
+        <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+          <HiClipboardList className="w-5 h-5 text-gray-500" />
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={statusVariant[order.orderStatus]}>{order.orderStatus}</Badge>
-          <Badge variant={paymentVariant[order.paymentStatus]}>{order.paymentStatus}</Badge>
-          <span className="ml-auto text-xs text-gray-500">
-            {new Date(order.createdAt).toLocaleDateString()}
-          </span>
+        <div className="flex-1 min-w-0">
+          <p className="text-gray-900 font-medium text-sm">#{order._id?.slice(-6).toUpperCase()}</p>
+          <p className="text-gray-500 text-xs">{order.product?.title}</p>
         </div>
+        <div className="text-right flex-shrink-0">
+          <p className="text-gray-900 font-semibold text-sm">₹{order.amount}</p>
+          <p className="text-gray-400 text-xs">{new Date(order.createdAt).toLocaleDateString()}</p>
+        </div>
+        <Badge variant={order.paymentStatus === 'paid' ? 'active' : order.paymentStatus === 'pending' ? 'pending' : 'danger'}>
+          {order.paymentStatus}
+        </Badge>
       </div>
     </Link>
   );

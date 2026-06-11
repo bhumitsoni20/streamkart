@@ -15,6 +15,7 @@ const googleProvider = new GoogleAuthProvider();
 
 // Email Authentication
 export const signUpWithEmail = async (email, password, displayName) => {
+  if (!auth) throw new Error('Firebase not configured');
   const result = await createUserWithEmailAndPassword(auth, email, password);
   if (displayName) {
     await updateProfile(result.user, { displayName });
@@ -23,18 +24,21 @@ export const signUpWithEmail = async (email, password, displayName) => {
 };
 
 export const signInWithEmail = async (email, password) => {
+  if (!auth) throw new Error('Firebase not configured');
   const result = await signInWithEmailAndPassword(auth, email, password);
   return result.user;
 };
 
 // Google Authentication
 export const signInWithGoogle = async () => {
+  if (!auth) throw new Error('Firebase not configured');
   const result = await signInWithPopup(auth, googleProvider);
   return result.user;
 };
 
 // Phone OTP Authentication
 export const setupRecaptcha = (containerId) => {
+  if (!auth) throw new Error('Firebase not configured');
   const verifier = new RecaptchaVerifier(auth, containerId, {
     size: 'invisible',
   });
@@ -42,6 +46,7 @@ export const setupRecaptcha = (containerId) => {
 };
 
 export const sendOTP = async (phoneNumber, recaptchaVerifier) => {
+  if (!auth) throw new Error('Firebase not configured');
   const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
   return confirmationResult;
 };
@@ -53,16 +58,22 @@ export const verifyOTP = async (confirmationResult, otp) => {
 
 // Sign Out
 export const signOut = async () => {
+  if (!auth) return;
   await firebaseSignOut(auth);
 };
 
 // Auth State Observer
 export const onAuthChange = (callback) => {
+  if (!auth) {
+    callback(null);
+    return () => {};
+  }
   return onAuthStateChanged(auth, callback);
 };
 
 // Get ID Token
 export const getIdToken = async () => {
+  if (!auth) return null;
   const user = auth.currentUser;
   if (user) {
     return await user.getIdToken();

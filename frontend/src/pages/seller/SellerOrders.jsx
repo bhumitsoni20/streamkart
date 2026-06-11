@@ -1,25 +1,15 @@
-import { useState } from 'react';
-import OrderCard from '../../components/cards/OrderCard';
-import Pagination from '../../components/ui/Pagination';
-import Spinner from '../../components/ui/Spinner';
-import { useSellerOrders } from '../../hooks/useOrders';
-
 const SellerOrders = () => {
-  const [page, setPage] = useState(1);
-  const { data, isLoading } = useSellerOrders(`page=${page}&limit=10`);
-
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Seller Orders</h1>
-      {isLoading ? <div className="flex justify-center py-16"><Spinner /></div> : (
-        <>
-          <div className="space-y-3">
-            {data?.data?.map((o) => <OrderCard key={o._id} order={o} />)}
-            {(!data?.data || data.data.length === 0) && <p className="text-gray-500 text-center py-12">No orders received yet</p>}
-          </div>
-          {data?.pagination && <Pagination page={data.pagination.page} totalPages={data.pagination.pages} onPageChange={setPage} />}
-        </>
-      )}
+      <h1 className="text-xl font-bold text-gray-900 mb-6">Seller Orders</h1>
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+        <table className="w-full">
+          <thead><tr className="border-b border-gray-100 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <th className="p-4">Order ID</th><th className="p-4">Product</th><th className="p-4">Buyer</th><th className="p-4">Amount</th><th className="p-4">Status</th>
+          </tr></thead>
+          <tbody><tr><td colSpan={5} className="p-8 text-center text-gray-500 text-sm">Orders will appear once customers purchase your products</td></tr></tbody>
+        </table>
+      </div>
     </div>
   );
 };

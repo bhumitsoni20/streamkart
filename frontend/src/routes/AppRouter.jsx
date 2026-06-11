@@ -16,6 +16,7 @@ import Home from '../pages/marketplace/Home';
 import ProductList from '../pages/marketplace/ProductList';
 import ProductDetail from '../pages/marketplace/ProductDetail';
 import Search from '../pages/marketplace/Search';
+import Checkout from '../pages/marketplace/Checkout';
 import About from '../pages/public/About';
 import Contact from '../pages/public/Contact';
 import Privacy from '../pages/public/Privacy';
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
       { path: 'products', element: <ProductList /> },
       { path: 'products/:id', element: <ProductDetail /> },
       { path: 'search', element: <Search /> },
+      { path: 'checkout', element: <Checkout /> },
       { path: 'about', element: <About /> },
       { path: 'contact', element: <Contact /> },
       { path: 'privacy', element: <Privacy /> },

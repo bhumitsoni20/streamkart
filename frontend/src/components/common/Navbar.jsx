@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HiMenu, HiX, HiShoppingCart, HiBell, HiUser } from 'react-icons/hi';
+import { HiMenu, HiX, HiShoppingCart, HiBell, HiSearch } from 'react-icons/hi';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
 import { signOut } from '../../firebase/auth';
@@ -21,28 +21,31 @@ const Navbar = () => {
 
   const navLinks = [
     { label: 'Marketplace', to: '/products' },
-    { label: 'About', to: '/about' },
-    { label: 'Contact', to: '/contact' },
+    { label: 'Features', to: '/about' },
+    { label: 'Enterprise', to: '/about' },
+    { label: 'Pricing', to: '/products' },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm">
-              PN
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
+              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
             </div>
-            <span className="text-xl font-bold text-white hidden sm:block">
-              Prime<span className="text-blue-400">Net</span>
+            <span className="text-xl font-bold text-gray-900">
+              <span className="text-indigo-600">Prime</span> Net
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-7">
             {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
+              <Link key={link.label} to={link.to} className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">
                 {link.label}
               </Link>
             ))}
@@ -52,59 +55,62 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard/notifications" className="relative p-2 text-gray-400 hover:text-white transition-colors">
+                <button onClick={() => navigate('/search')} className="p-2 text-gray-500 hover:text-gray-700 transition-colors hidden sm:block">
+                  <HiSearch className="w-5 h-5" />
+                </button>
+                <Link to="/dashboard/notifications" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <HiBell className="w-5 h-5" />
                 </Link>
-                <Link to="/products" className="relative p-2 text-gray-400 hover:text-white transition-colors">
+                <Link to="/products" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <HiShoppingCart className="w-5 h-5" />
                   {itemCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-blue-500 text-[10px] font-bold text-white flex items-center justify-center">
+                    <span className="absolute -top-0.5 -right-0.5 h-4.5 w-4.5 rounded-full bg-indigo-600 text-[10px] font-bold text-white flex items-center justify-center">
                       {itemCount}
                     </span>
                   )}
                 </Link>
-                <div className="relative">
+                <div className="relative ml-1">
                   <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <Avatar src={user?.avatar} name={user?.name} size="sm" />
                   </button>
                   {profileOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl py-2 animate-fadeIn">
-                      <div className="px-4 py-2 border-b border-white/10">
-                        <p className="text-white text-sm font-medium">{user?.name}</p>
+                    <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-1.5 animate-slideDown">
+                      <div className="px-4 py-2.5 border-b border-gray-100">
+                        <p className="text-gray-900 text-sm font-medium">{user?.name}</p>
                         <p className="text-gray-500 text-xs">{user?.email}</p>
                       </div>
-                      <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 transition-colors">Dashboard</Link>
-                      <Link to="/dashboard/profile" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 transition-colors">Profile</Link>
+                      <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">Dashboard</Link>
+                      <Link to="/dashboard/profile" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">Profile</Link>
                       {(user?.role === 'seller' || user?.role === 'admin') && (
-                        <Link to="/seller" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 transition-colors">Seller Panel</Link>
+                        <Link to="/seller" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">Seller Panel</Link>
                       )}
                       {user?.role === 'admin' && (
-                        <Link to="/admin" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 transition-colors">Admin Panel</Link>
+                        <Link to="/admin" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">Admin Panel</Link>
                       )}
-                      <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 transition-colors">Sign Out</button>
+                      <div className="border-t border-gray-100 mt-1">
+                        <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors">Sign Out</button>
+                      </div>
                     </div>
                   )}
                 </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <Link to="/login"><Button variant="ghost" size="sm">Sign In</Button></Link>
+                <Link to="/login"><Button variant="ghost" size="sm">Log In</Button></Link>
                 <Link to="/register"><Button size="sm">Get Started</Button></Link>
               </div>
             )}
 
-            {/* Mobile toggle */}
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-gray-400 hover:text-white">
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-gray-500 hover:text-gray-700">
               {mobileOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden py-4 border-t border-white/5 animate-fadeIn">
+          <div className="md:hidden py-4 border-t border-gray-100 animate-slideDown">
             {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)} className="block py-2 text-gray-400 hover:text-white transition-colors">
+              <Link key={link.label} to={link.to} onClick={() => setMobileOpen(false)} className="block py-2.5 text-gray-600 hover:text-gray-900 transition-colors font-medium">
                 {link.label}
               </Link>
             ))}

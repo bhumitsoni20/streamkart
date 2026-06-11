@@ -11,14 +11,29 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+let app = null;
+let auth = null;
+
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+} catch (error) {
+  console.warn('Firebase initialization failed:', error.message);
+  console.warn('Auth features will be unavailable. Please check your .env configuration.');
+}
+
+export { auth };
 
 // Messaging (only in supported browsers)
 export const getFirebaseMessaging = async () => {
-  const supported = await isSupported();
-  if (supported) {
-    return getMessaging(app);
+  if (!app) return null;
+  try {
+    const supported = await isSupported();
+    if (supported) {
+      return getMessaging(app);
+    }
+  } catch (e) {
+    console.warn('Firebase messaging not supported');
   }
   return null;
 };

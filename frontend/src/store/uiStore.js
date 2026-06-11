@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 const useUiStore = create((set) => ({
   sidebarOpen: false,
-  theme: 'dark',
+  theme: 'light',
   activeModal: null,
 
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),

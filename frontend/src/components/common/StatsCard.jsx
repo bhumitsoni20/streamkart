@@ -1,25 +1,29 @@
-const StatsCard = ({ icon: Icon, label, value, trend, color = 'blue' }) => {
+const StatsCard = ({ icon: Icon, label, value, trend, color = 'blue', alert = false }) => {
   const colors = {
-    blue: 'from-blue-500/20 to-blue-600/20 text-blue-400',
-    purple: 'from-purple-500/20 to-purple-600/20 text-purple-400',
-    green: 'from-emerald-500/20 to-emerald-600/20 text-emerald-400',
-    amber: 'from-amber-500/20 to-amber-600/20 text-amber-400',
+    blue: 'bg-blue-50 text-blue-600',
+    purple: 'bg-purple-50 text-purple-600',
+    green: 'bg-emerald-50 text-emerald-600',
+    amber: 'bg-amber-50 text-amber-600',
+    red: 'bg-red-50 text-red-600',
   };
 
   return (
-    <div className="bg-gray-900/80 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center`}>
-          {Icon && <Icon className="w-6 h-6" />}
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover-lift">
+      <div className="flex items-start justify-between mb-4">
+        <div className={`h-11 w-11 rounded-xl ${colors[color]} flex items-center justify-center`}>
+          {Icon && <Icon className="w-5 h-5" />}
         </div>
-        {trend && (
-          <span className={`text-sm font-medium ${trend > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {trend > 0 ? '+' : ''}{trend}%
+        {trend !== undefined && (
+          <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${
+            alert ? 'bg-red-50 text-red-600' : trend > 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'
+          }`}>
+            {alert ? '! High' : `${trend > 0 ? '+' : ''}${trend}%`}
+            {!alert && <span className="text-[10px]">↗</span>}
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-sm text-gray-500 mt-1">{label}</p>
+      <p className="text-sm text-gray-500 mb-0.5">{label}</p>
+      <p className="text-xl font-bold text-gray-900">{value}</p>
     </div>
   );
 };

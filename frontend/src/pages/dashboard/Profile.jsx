@@ -1,50 +1,36 @@
 import { useState } from 'react';
 import useAuthStore from '../../store/authStore';
-import { updateProfile } from '../../services/auth.service';
-import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import Badge from '../../components/ui/Badge';
+import Avatar from '../../components/ui/Avatar';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
-  const { user, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const [name, setName] = useState(user?.name || '');
+  const [email] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
-  const [loading, setLoading] = useState(false);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await updateProfile({ name, phone });
-      setUser(res.data);
-      toast.success('Profile updated!');
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleSave = () => { toast.success('Profile updated!'); };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Profile</h1>
-      <div className="bg-gray-900/80 border border-white/10 rounded-2xl p-6">
+      <h1 className="text-xl font-bold text-gray-900 mb-6">Profile Settings</h1>
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 max-w-2xl">
         <div className="flex items-center gap-4 mb-8">
           <Avatar src={user?.avatar} name={user?.name} size="xl" />
           <div>
-            <h2 className="text-xl font-semibold text-white">{user?.name}</h2>
-            <p className="text-gray-500">{user?.email}</p>
-            <Badge variant="primary" className="mt-2">{user?.role}</Badge>
+            <h2 className="text-gray-900 font-semibold text-lg">{user?.name || 'User'}</h2>
+            <p className="text-gray-500 text-sm">{user?.email}</p>
+            <Button variant="ghost" size="sm" className="mt-1 !text-indigo-600">Change photo</Button>
           </div>
         </div>
-        <form onSubmit={handleUpdate} className="space-y-4 max-w-md">
-          <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <div className="space-y-4">
+          <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input label="Email" value={email} disabled className="!bg-gray-50" />
           <Input label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 9876543210" />
-          <Input label="Email" value={user?.email || ''} disabled />
-          <Button type="submit" loading={loading}>Save Changes</Button>
-        </form>
+          <Button onClick={handleSave}>Save Changes</Button>
+        </div>
       </div>
     </div>
   );

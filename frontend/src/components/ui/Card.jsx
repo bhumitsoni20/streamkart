@@ -1,7 +1,7 @@
-const Card = ({ children, className = '', hover = true, glass = false }) => {
+const Card = ({ children, className = '', hover = true, padding = true }) => {
   return (
     <div
-      className={`rounded-2xl border border-white/10 ${glass ? 'bg-white/5 backdrop-blur-xl' : 'bg-gray-900/80'} ${hover ? 'hover:border-white/20 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300' : ''} ${className}`}
+      className={`rounded-2xl border border-gray-200 bg-white ${hover ? 'hover-lift' : ''} ${padding ? 'p-6' : ''} ${className}`}
     >
       {children}
     </div>
