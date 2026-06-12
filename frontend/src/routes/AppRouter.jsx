@@ -8,6 +8,7 @@ import RoleRoute from './RoleRoute';
 // Auth Pages
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
+import RegisterSeller from '../pages/auth/RegisterSeller';
 import PhoneLogin from '../pages/auth/PhoneLogin';
 import ForgotPassword from '../pages/auth/ForgotPassword';
 import VerifyEmail from '../pages/auth/VerifyEmail';
@@ -66,6 +67,7 @@ const router = createBrowserRouter([
     children: [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
+      { path: 'register-seller', element: <RegisterSeller /> },
       { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'phone-login', element: <PhoneLogin /> },
       { path: 'forgot-password', element: <ForgotPassword /> },

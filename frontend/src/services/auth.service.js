@@ -7,3 +7,4 @@ export const updateProfile = (data) => apiPut('/auth/profile', data);
 export const updateFCMToken = (fcmToken) => apiPut('/auth/fcm-token', { fcmToken });
 export const sendVerificationEmail = () => apiPost('/auth/send-verification', {});
 export const requestPasswordReset = (email) => apiPost('/auth/send-password-reset', { email });
+export const becomeSeller = () => apiPut('/auth/become-seller', {});

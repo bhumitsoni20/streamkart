@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, getMe, updateProfile, updateFCMToken, sendVerificationEmail, sendPasswordReset } from '../controllers/auth.controller';
+import { register, login, getMe, updateProfile, updateFCMToken, sendVerificationEmail, sendPasswordReset, becomeSeller } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth';
 import { authLimiter } from '../middleware/rateLimiter';
 
@@ -12,5 +12,6 @@ router.post('/send-password-reset', authLimiter, sendPasswordReset);
 router.get('/me', authenticate, getMe);
 router.put('/profile', authenticate, updateProfile);
 router.put('/fcm-token', authenticate, updateFCMToken);
+router.put('/become-seller', authenticate, becomeSeller);
 
 export default router;

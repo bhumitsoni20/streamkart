@@ -95,6 +95,9 @@ const Navbar = () => {
               </>
             ) : (
               <div className="flex items-center gap-2">
+                <Link to="/register-seller" className="hidden sm:block text-sm font-medium text-indigo-600 hover:text-indigo-500 mr-2">
+                  Become a Seller
+                </Link>
                 <Link to="/login"><Button variant="ghost" size="sm">Log In</Button></Link>
                 <Link to="/register"><Button size="sm">Get Started</Button></Link>
               </div>

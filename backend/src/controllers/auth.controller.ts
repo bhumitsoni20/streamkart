@@ -8,7 +8,7 @@ import { env } from '../config/env';
 // POST /api/auth/register
 export const register = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, email, phone } = req.body;
+    const { name, email, phone, role } = req.body;
     const firebaseUser = req.firebaseUser;
 
     let user = await User.findOne({ firebaseUid: firebaseUser.uid });
@@ -18,6 +18,10 @@ export const register = async (req: AuthRequest, res: Response) => {
     }
 
     const isAdmin = env.ADMIN_EMAIL && (email || firebaseUser.email) === env.ADMIN_EMAIL;
+    // Only allow specific roles, default to user
+    const requestedRole = (role === 'seller') ? 'seller' : 'user';
+    const finalRole = isAdmin ? 'admin' : requestedRole;
+
     user = await User.create({
       name: name || firebaseUser.name || email?.split('@')[0] || 'User',
       email: email || firebaseUser.email || '',
@@ -25,7 +29,7 @@ export const register = async (req: AuthRequest, res: Response) => {
       firebaseUid: firebaseUser.uid,
       avatar: firebaseUser.picture || '',
       isVerified: firebaseUser.email_verified || false,
-      role: isAdmin ? 'admin' : 'user',
+      role: finalRole,
     });
 
     await sendWelcomeEmail(user.email, user.name);
@@ -128,6 +132,28 @@ export const sendPasswordReset = async (req: AuthRequest, res: Response) => {
       // Don't leak that the user wasn't found for security, just pretend it sent
       return sendSuccess(res, null, 'If that email exists, a reset link was sent.');
     }
+    return sendError(res, error.message);
+  }
+};
+
+// PUT /api/auth/become-seller
+export const becomeSeller = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = req.user;
+    if (!user) return sendError(res, 'User not found.', 404);
+
+    if (user.role === 'seller' || user.role === 'admin') {
+      return sendError(res, 'User is already a seller or admin.', 400);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { role: 'seller' },
+      { new: true, runValidators: true }
+    );
+
+    return sendSuccess(res, updatedUser, 'Successfully upgraded to seller account!');
+  } catch (error: any) {
     return sendError(res, error.message);
   }
 };
