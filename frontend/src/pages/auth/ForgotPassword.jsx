@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HiMail } from 'react-icons/hi';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../firebase/config';
+import { requestPasswordReset } from '../../services/auth.service';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import toast from 'react-hot-toast';
@@ -14,9 +13,13 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!auth) { toast.error('Firebase not configured'); return; }
+    if (!email) { toast.error('Email is required'); return; }
     setLoading(true);
-    try { await sendPasswordResetEmail(auth, email); setSent(true); toast.success('Reset link sent!'); }
+    try { 
+      await requestPasswordReset(email); 
+      setSent(true); 
+      toast.success('Reset link sent!'); 
+    }
     catch (error) { toast.error(error.message || 'Failed to send reset email'); }
     finally { setLoading(false); }
   };

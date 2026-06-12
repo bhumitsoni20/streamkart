@@ -141,6 +141,81 @@ export const sendCustomVerificationEmail = async (email: string, displayName: st
   }
 };
 
+export const sendCustomPasswordResetEmail = async (email: string, displayName?: string) => {
+  try {
+    if (!env.SMTP_USER || !env.SMTP_PASS) {
+      logger.warn('SMTP credentials not configured. Skipping password reset email.');
+      return false;
+    }
+
+    const actionCodeSettings = {
+      url: `${env.CLIENT_URL}/login`,
+      handleCodeInApp: false,
+    };
+    
+    // Generate the exact Firebase password reset link
+    const link = await firebaseAuth.generatePasswordResetLink(email, actionCodeSettings);
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  body { background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+  .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+  .header { background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%); padding: 40px 20px; text-align: center; }
+  .logo { display: inline-block; background-color: #4f46e5; color: white; width: 48px; height: 48px; line-height: 48px; border-radius: 12px; font-weight: bold; font-size: 24px; margin-bottom: 16px; }
+  .title { color: #ffffff; font-size: 24px; font-weight: 700; margin: 0; }
+  .content { padding: 40px 32px; color: #374151; line-height: 1.6; text-align: center; }
+  .greeting { font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 16px; }
+  .button { display: inline-block; background-color: #4f46e5; color: #ffffff !important; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; margin: 32px 0; }
+  .warning { background-color: #fef2f2; color: #991b1b; padding: 16px; border-radius: 8px; font-size: 14px; margin-top: 24px; border: 1px solid #fee2e2; }
+  .footer { background-color: #f3f4f6; padding: 24px; text-align: center; color: #6b7280; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">▶</div>
+      <h1 class="title">Reset Your Password</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">Hello ${displayName || 'there'},</div>
+      <p>We received a request to reset the password for your Prime Net account. Don't worry, we've got you covered!</p>
+      <p>Simply click the button below to securely set a new password and regain access to your account.</p>
+      
+      <a href="${link}" class="button">Reset Password</a>
+      
+      <div class="warning">
+        <strong>Didn't request this?</strong><br>
+        If you didn't ask to reset your password, please ignore this email. Your password will remain unchanged and your account is secure.
+      </div>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 Prime Net. All rights reserved.</p>
+      <p>This is an automated message. Please do not reply.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    await transporter.sendMail({
+      from: '"Prime Net" <noreply@primenet.com>',
+      to: email,
+      subject: 'Reset your password for Prime Net',
+      html: htmlContent,
+    });
+    
+    logger.info(`Password reset email sent to ${email}`);
+    return true;
+  } catch (error) {
+    logger.error(`Error sending password reset email: ${error}`);
+    return false;
+  }
+};
+
 export const sendEmail = async (to: string, subject: string, body: string) => {
   logger.info(`[Email Placeholder] To: ${to}, Subject: ${subject}`);
   return true;

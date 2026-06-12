@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { User } from '../models/User';
 import { sendSuccess, sendError } from '../utils/response';
-import { sendWelcomeEmail, sendCustomVerificationEmail } from '../services/email.service';
+import { sendWelcomeEmail, sendCustomVerificationEmail, sendCustomPasswordResetEmail } from '../services/email.service';
 import { env } from '../config/env';
 
 // POST /api/auth/register
@@ -103,6 +103,31 @@ export const sendVerificationEmail = async (req: AuthRequest, res: Response) => 
       return sendError(res, 'Failed to send verification email.', 500);
     }
   } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// POST /api/auth/send-password-reset
+export const sendPasswordReset = async (req: AuthRequest, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) return sendError(res, 'Email is required.', 400);
+
+    // Try to find the user to get their name for the email
+    const user = await User.findOne({ email });
+    const displayName = user ? user.name : '';
+
+    const success = await sendCustomPasswordResetEmail(email, displayName);
+    if (success) {
+      return sendSuccess(res, null, 'Password reset email sent.');
+    } else {
+      return sendError(res, 'Failed to send password reset email.', 500);
+    }
+  } catch (error: any) {
+    if (error.code === 'auth/user-not-found') {
+      // Don't leak that the user wasn't found for security, just pretend it sent
+      return sendSuccess(res, null, 'If that email exists, a reset link was sent.');
+    }
     return sendError(res, error.message);
   }
 };
