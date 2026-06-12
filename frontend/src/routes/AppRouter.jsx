@@ -8,7 +8,6 @@ import RoleRoute from './RoleRoute';
 // Auth Pages
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
-import RegisterSeller from '../pages/auth/RegisterSeller';
 import PhoneLogin from '../pages/auth/PhoneLogin';
 import ForgotPassword from '../pages/auth/ForgotPassword';
 import VerifyEmail from '../pages/auth/VerifyEmail';
@@ -31,6 +30,7 @@ import Orders from '../pages/dashboard/Orders';
 import OrderDetail from '../pages/dashboard/OrderDetail';
 import Profile from '../pages/dashboard/Profile';
 import Notifications from '../pages/dashboard/Notifications';
+import SellerApplication from '../pages/dashboard/SellerApplication';
 
 // Seller Pages
 import SellerDashboard from '../pages/seller/SellerDashboard';
@@ -44,6 +44,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import ManageUsers from '../pages/admin/ManageUsers';
 import ManageProducts from '../pages/admin/ManageProducts';
 import ManageOrders from '../pages/admin/ManageOrders';
+import ManageApplications from '../pages/admin/ManageApplications';
 
 const router = createBrowserRouter([
   {
@@ -67,7 +68,6 @@ const router = createBrowserRouter([
     children: [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
-      { path: 'register-seller', element: <RegisterSeller /> },
       { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'phone-login', element: <PhoneLogin /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
@@ -86,6 +86,7 @@ const router = createBrowserRouter([
       { path: 'orders/:id', element: <OrderDetail /> },
       { path: 'profile', element: <Profile /> },
       { path: 'notifications', element: <Notifications /> },
+      { path: 'apply-seller', element: <SellerApplication /> },
     ],
   },
   {
@@ -115,6 +116,7 @@ const router = createBrowserRouter([
       { path: 'users', element: <ManageUsers /> },
       { path: 'products', element: <ManageProducts /> },
       { path: 'orders', element: <ManageOrders /> },
+      { path: 'applications', element: <ManageApplications /> },
     ],
   },
   { path: '*', element: <NotFound /> },

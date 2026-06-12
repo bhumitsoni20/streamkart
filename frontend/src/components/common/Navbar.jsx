@@ -54,6 +54,14 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
               <>
+                {user?.role === 'user' && (
+                  <Link 
+                    to="/dashboard/apply-seller" 
+                    className="hidden sm:flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-full transition-colors mr-2"
+                  >
+                    Become a Seller
+                  </Link>
+                )}
                 <button onClick={() => navigate('/search')} className="p-2 text-gray-500 hover:text-gray-700 transition-colors hidden sm:block">
                   <HiSearch className="w-5 h-5" />
                 </button>
@@ -95,7 +103,7 @@ const Navbar = () => {
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <Link to="/register-seller" className="hidden sm:block text-sm font-medium text-indigo-600 hover:text-indigo-500 mr-2">
+                <Link to="/dashboard/apply-seller" className="hidden sm:block text-sm font-medium text-indigo-600 hover:text-indigo-500 mr-2">
                   Become a Seller
                 </Link>
                 <Link to="/login"><Button variant="ghost" size="sm">Log In</Button></Link>

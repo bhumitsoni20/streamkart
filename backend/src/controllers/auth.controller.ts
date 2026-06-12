@@ -8,7 +8,7 @@ import { env } from '../config/env';
 // POST /api/auth/register
 export const register = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, email, phone, role } = req.body;
+    const { name, email, phone } = req.body;
     const firebaseUser = req.firebaseUser;
 
     let user = await User.findOne({ firebaseUid: firebaseUser.uid });
@@ -18,9 +18,6 @@ export const register = async (req: AuthRequest, res: Response) => {
     }
 
     const isAdmin = env.ADMIN_EMAIL && (email || firebaseUser.email) === env.ADMIN_EMAIL;
-    // Only allow specific roles, default to user
-    const requestedRole = (role === 'seller') ? 'seller' : 'user';
-    const finalRole = isAdmin ? 'admin' : requestedRole;
 
     user = await User.create({
       name: name || firebaseUser.name || email?.split('@')[0] || 'User',
@@ -29,7 +26,7 @@ export const register = async (req: AuthRequest, res: Response) => {
       firebaseUid: firebaseUser.uid,
       avatar: firebaseUser.picture || '',
       isVerified: firebaseUser.email_verified || false,
-      role: finalRole,
+      role: isAdmin ? 'admin' : 'user',
     });
 
     await sendWelcomeEmail(user.email, user.name);

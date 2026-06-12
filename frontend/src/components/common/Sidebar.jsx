@@ -25,6 +25,7 @@ const Sidebar = () => {
   const adminLinks = [
     { to: '/admin', icon: HiChartBar, label: 'Dashboard', end: true },
     { to: '/admin/users', icon: HiUsers, label: 'Subscribers' },
+    { to: '/admin/applications', icon: HiClipboardList, label: 'Applications' },
     { to: '/admin/products', icon: HiCube, label: 'Integrations' },
     { to: '/admin/orders', icon: HiCog, label: 'Settings' },
   ];

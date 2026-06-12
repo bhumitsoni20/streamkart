@@ -2,7 +2,6 @@ import app from './app';
 import { connectDB } from './config/db';
 import { env } from './config/env';
 import { logger } from './utils/logger';
-
 const startServer = async () => {
   try {
     // Connect to MongoDB

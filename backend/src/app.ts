@@ -14,6 +14,7 @@ import paymentRoutes from './routes/payment.routes';
 import notificationRoutes from './routes/notification.routes';
 import reviewRoutes from './routes/review.routes';
 import adminRoutes from './routes/admin.routes';
+import sellerRoutes from './routes/seller.routes';
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/seller', sellerRoutes);
 
 // ─── 404 Handler ────────────────────────────────────────
 app.use((_req, res) => {

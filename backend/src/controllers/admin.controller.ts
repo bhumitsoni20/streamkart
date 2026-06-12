@@ -128,3 +128,59 @@ export const getAllOrders = async (req: Request, res: Response) => {
     return sendError(res, error.message);
   }
 };
+
+// GET /api/admin/applications
+export const getApplications = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+    if (req.query.status) filter.status = req.query.status;
+
+    // Must import SellerApplication at top of file
+    const { SellerApplication } = await import('../models/SellerApplication');
+
+    const [applications, total] = await Promise.all([
+      SellerApplication.find(filter)
+        .populate('user', 'name email avatar')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      SellerApplication.countDocuments(filter),
+    ]);
+
+    return sendPaginated(res, applications, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// PUT /api/admin/applications/:id/status
+export const updateApplicationStatus = async (req: AuthRequest, res: Response) => {
+  try {
+    const { status } = req.body;
+    if (!['approved', 'rejected'].includes(status)) {
+      return sendError(res, 'Invalid status.', 400);
+    }
+
+    const { SellerApplication } = await import('../models/SellerApplication');
+
+    const application = await SellerApplication.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!application) return sendError(res, 'Application not found.', 404);
+
+    if (status === 'approved') {
+      await User.findByIdAndUpdate(application.user, { role: 'seller' });
+    }
+
+    return sendSuccess(res, application, `Application ${status}.`);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};

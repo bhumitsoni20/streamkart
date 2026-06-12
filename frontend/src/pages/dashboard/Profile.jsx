@@ -32,6 +32,29 @@ const Profile = () => {
           <Button onClick={handleSave}>Save Changes</Button>
         </div>
       </div>
+
+      {/* Seller Account Upgrade */}
+      {user?.role === 'user' && (
+        <div className="mt-8 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 max-w-2xl">
+          <h3 className="text-lg font-semibold text-indigo-900 mb-2">Want to sell on Prime Net?</h3>
+          <p className="text-indigo-700 text-sm mb-4">Upgrade your account to a seller profile to access the Seller Dashboard, manage inventory, and receive orders.</p>
+          <Button 
+            onClick={async () => {
+              try {
+                const { becomeSeller } = await import('../../services/auth.service');
+                const res = await becomeSeller();
+                useAuthStore.getState().setUser(res.data);
+                toast.success('You are now a Seller!');
+                window.location.href = '/seller'; // Force a full navigation to ensure sidebar updates
+              } catch (err) {
+                toast.error(err.message || 'Failed to upgrade');
+              }
+            }}
+          >
+            Upgrade to Seller Account
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
