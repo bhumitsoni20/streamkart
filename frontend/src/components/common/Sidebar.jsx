@@ -85,11 +85,7 @@ const Sidebar = () => {
 
         {/* Bottom */}
         <div className="p-3 border-t border-gray-100">
-          <div className="bg-indigo-50 rounded-xl p-3 mb-3">
-            <p className="text-indigo-600 font-semibold text-sm">Pro Plan</p>
-            <p className="text-gray-500 text-xs mt-0.5">Unlock advanced tools.</p>
-            <Button size="sm" className="w-full mt-2.5 !text-xs">Upgrade Plan</Button>
-          </div>
+
           <NavLink to="/contact" className="flex items-center gap-2.5 px-3 py-2 text-gray-500 hover:text-gray-700 text-sm transition-colors">
             <HiSupport className="w-4 h-4" /> Support
           </NavLink>
