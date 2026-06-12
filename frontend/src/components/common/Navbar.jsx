@@ -83,8 +83,8 @@ const Navbar = () => {
                   {profileOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-1.5 animate-slideDown">
                       <div className="px-4 py-2.5 border-b border-gray-100">
-                        <p className="text-gray-900 text-sm font-medium">{user?.name}</p>
-                        <p className="text-gray-500 text-xs">{user?.email}</p>
+                        <p className="text-gray-900 text-sm font-medium truncate" title={user?.name}>{user?.name}</p>
+                        <p className="text-gray-500 text-xs truncate" title={user?.email}>{user?.email}</p>
                       </div>
                       <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">Dashboard</Link>
                       <Link to="/dashboard/profile" onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">Profile</Link>
