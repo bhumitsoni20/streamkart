@@ -8,7 +8,7 @@ const categories = ['ott', 'ai-tools', 'vpn', 'education', 'software', 'cloud-st
 
 const AddProduct = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ title: '', description: '', price: '', category: 'ai-tools', features: '', deliveryType: 'instant' });
+  const [form, setForm] = useState({ title: '', logo: '', description: '', price: '', category: 'ai-tools', features: '', deliveryType: 'instant' });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -26,6 +26,7 @@ const AddProduct = () => {
       <h1 className="text-xl font-bold text-gray-900 mb-6">Add New Product</h1>
       <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 max-w-2xl space-y-5">
         <Input label="Product Title" placeholder="e.g. ChatGPT Plus" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+        <Input label="App Logo URL" placeholder="https://example.com/logo.png" value={form.logo} onChange={(e) => setForm({ ...form, logo: e.target.value })} />
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" required />
