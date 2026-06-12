@@ -58,7 +58,7 @@ const Dashboard = () => {
                 {[
                   { name: 'CloudCore Enterprise', category: 'Infrastructure', status: 'Active', billing: 'Monthly', renewal: 'Jan 12', amount: '₹2,400' },
                   { name: 'Shield AI Pro', category: 'Security', status: 'Active', billing: 'Annual', renewal: 'Mar 05', amount: '₹12,000' },
-                  { name: 'Prime Mail Service', category: 'Communication', status: 'Pending', billing: 'Monthly', renewal: 'Jan 01', amount: '₹89' },
+                  { name: 'Streamkart Mail Service', category: 'Communication', status: 'Pending', billing: 'Monthly', renewal: 'Jan 01', amount: '₹89' },
                 ].map((s, i) => (
                   <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                     <td className="p-4">

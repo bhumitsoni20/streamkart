@@ -20,7 +20,7 @@ const AuthLayout = () => {
             <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
             </div>
-            <span className="text-white font-bold">Prime Net</span>
+            <span className="text-white font-bold">Streamkart</span>
           </Link>
 
           {/* Headline */}

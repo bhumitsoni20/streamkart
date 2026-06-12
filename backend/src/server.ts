@@ -9,7 +9,7 @@ const startServer = async () => {
 
     // Start Express server
     app.listen(env.PORT, () => {
-      logger.info(`🚀 Prime Net API running on port ${env.PORT}`);
+      logger.info(`🚀 Streamkart API running on port ${env.PORT}`);
       logger.info(`📍 Environment: ${env.NODE_ENV}`);
       logger.info(`🔗 Health check: http://localhost:${env.PORT}/api/health`);
     });

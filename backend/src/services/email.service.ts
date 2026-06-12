@@ -106,11 +106,11 @@ export const sendCustomVerificationEmail = async (email: string, displayName: st
   <div class="container">
     <div class="header">
       <div class="logo">▶</div>
-      <h1 class="title">Welcome to Prime Net!</h1>
+      <h1 class="title">Welcome to Streamkart!</h1>
     </div>
     <div class="content">
       <div class="greeting">Hi ${displayName || 'there'},</div>
-      <p>Thank you for joining Prime Net &mdash; your ultimate digital subscription marketplace. We're thrilled to have you on board!</p>
+      <p>Thank you for joining Streamkart &mdash; your ultimate digital subscription marketplace. We're thrilled to have you on board!</p>
       <p>Before you get started exploring and managing your subscriptions seamlessly, please verify your email address by clicking the button below.</p>
       
       <a href="${link}" class="button">Verify Email Address</a>
@@ -118,7 +118,7 @@ export const sendCustomVerificationEmail = async (email: string, displayName: st
       <p style="font-size: 14px; color: #6b7280;">If you didn't create an account with us, you can safely ignore this email.</p>
     </div>
     <div class="footer">
-      <p>&copy; 2026 Prime Net. All rights reserved.</p>
+      <p>&copy; 2026 Streamkart. All rights reserved.</p>
       <p>This is an automated message. Please do not reply.</p>
     </div>
   </div>
@@ -127,9 +127,9 @@ export const sendCustomVerificationEmail = async (email: string, displayName: st
     `;
 
     await transporter.sendMail({
-      from: '"Prime Net" <noreply@primenet.com>',
+      from: '"Streamkart" <noreply@streamkart.com>',
       to: email,
-      subject: 'Verify your email for Prime Net',
+      subject: 'Verify your email for Streamkart',
       html: htmlContent,
     });
     
@@ -182,7 +182,7 @@ export const sendCustomPasswordResetEmail = async (email: string, displayName?: 
     </div>
     <div class="content">
       <div class="greeting">Hello ${displayName || 'there'},</div>
-      <p>We received a request to reset the password for your Prime Net account. Don't worry, we've got you covered!</p>
+      <p>We received a request to reset the password for your Streamkart account. Don't worry, we've got you covered!</p>
       <p>Simply click the button below to securely set a new password and regain access to your account.</p>
       
       <a href="${link}" class="button">Reset Password</a>
@@ -193,7 +193,7 @@ export const sendCustomPasswordResetEmail = async (email: string, displayName?: 
       </div>
     </div>
     <div class="footer">
-      <p>&copy; 2026 Prime Net. All rights reserved.</p>
+      <p>&copy; 2026 Streamkart. All rights reserved.</p>
       <p>This is an automated message. Please do not reply.</p>
     </div>
   </div>
@@ -202,9 +202,9 @@ export const sendCustomPasswordResetEmail = async (email: string, displayName?: 
     `;
 
     await transporter.sendMail({
-      from: '"Prime Net" <noreply@primenet.com>',
+      from: '"Streamkart" <noreply@streamkart.com>',
       to: email,
-      subject: 'Reset your password for Prime Net',
+      subject: 'Reset your password for Streamkart',
       html: htmlContent,
     });
     
@@ -224,15 +224,15 @@ export const sendEmail = async (to: string, subject: string, body: string) => {
 export const sendWelcomeEmail = async (email: string, name: string) => {
   return sendEmail(
     email,
-    'Welcome to Prime Net!',
-    `Hi ${name}, welcome to Prime Net — your digital subscription marketplace!`
+    'Welcome to Streamkart!',
+    `Hi ${name}, welcome to Streamkart — your digital subscription marketplace!`
   );
 };
 
 export const sendOrderConfirmation = async (email: string, orderId: string) => {
   return sendEmail(
     email,
-    'Order Confirmed — Prime Net',
+    'Order Confirmed — Streamkart',
     `Your order #${orderId} has been placed successfully.`
   );
 };

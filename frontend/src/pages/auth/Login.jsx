@@ -46,7 +46,7 @@ const Login = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back 👋</h1>
-      <p className="text-gray-500 mb-8">Login to access your Prime Net account</p>
+      <p className="text-gray-500 mb-8">Login to access your Streamkart account</p>
 
       <form onSubmit={handleEmailLogin} className="space-y-4">
         <Input label="Email" type="email" icon={HiMail} placeholder="you@exemple.com" value={email} onChange={(e) => setEmail(e.target.value)} required />

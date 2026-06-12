@@ -99,7 +99,7 @@ const Contact = () => {
           <div className="lg:col-span-2">
             <div className="bg-white border border-gray-200 rounded-2xl p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Email support</h3>
-              <p className="text-indigo-600 text-sm mb-5">email @primenet.com</p>
+              <p className="text-indigo-600 text-sm mb-5">email @streamkart.com</p>
               <h3 className="font-semibold text-gray-900 mb-2">Response time</h3>
               <p className="text-gray-500 text-sm">20 minutes - 5 responses</p>
             </div>

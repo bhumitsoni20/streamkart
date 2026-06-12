@@ -13,7 +13,7 @@ export const openRazorpayCheckout = (order, user, onSuccess, onError) => {
     key: import.meta.env.VITE_RAZORPAY_KEY_ID,
     amount: order.amount,
     currency: order.currency,
-    name: 'Prime Net',
+    name: 'Streamkart',
     description: 'Digital Subscription Purchase',
     order_id: order.orderId,
     prefill: {

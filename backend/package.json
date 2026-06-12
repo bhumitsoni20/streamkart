@@ -1,7 +1,7 @@
 {
-  "name": "primenet-backend",
+  "name": "streamkart-backend",
   "version": "1.0.0",
-  "description": "Prime Net - Digital Subscription Marketplace API",
+  "description": "Streamkart - Digital Subscription Marketplace API",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node src/server.ts",

@@ -36,7 +36,7 @@ const Profile = () => {
       {/* Seller Account Upgrade */}
       {user?.role === 'user' && (
         <div className="mt-8 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 max-w-2xl">
-          <h3 className="text-lg font-semibold text-indigo-900 mb-2">Want to sell on Prime Net?</h3>
+          <h3 className="text-lg font-semibold text-indigo-900 mb-2">Want to sell on Streamkart?</h3>
           <p className="text-indigo-700 text-sm mb-4">Upgrade your account to a seller profile to access the Seller Dashboard, manage inventory, and receive orders.</p>
           <Button 
             onClick={async () => {

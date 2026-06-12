@@ -63,7 +63,7 @@ const Sidebar = () => {
       <aside className={`fixed top-16 left-0 bottom-0 w-60 bg-white border-r border-gray-100 z-30 overflow-y-auto transition-transform duration-300 lg:translate-x-0 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Brand */}
         <div className="p-4 border-b border-gray-100">
-          <p className="text-indigo-600 font-bold text-sm">Prime Net</p>
+          <p className="text-indigo-600 font-bold text-sm">Streamkart</p>
           <p className="text-gray-900 font-semibold text-sm">Dashboard</p>
           <p className="text-gray-400 text-xs">{user?.role === 'admin' ? 'Enterprise Tier' : 'Standard'}</p>
         </div>

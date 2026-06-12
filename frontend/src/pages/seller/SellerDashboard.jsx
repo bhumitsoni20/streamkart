@@ -84,7 +84,7 @@ const SellerDashboard = () => {
           <div className="space-y-4">
             {[
               { icon: '📦', title: 'New Order #8429', desc: 'Premium Design Kit purchased by Alex Reed.', time: '2 MINS AGO' },
-              { icon: '⭐', title: '5-Star Review Received', desc: '"Prime Net is the fastest platform I\'ve used!"', time: '1 HOUR AGO' },
+              { icon: '⭐', title: '5-Star Review Received', desc: '"Streamkart is the fastest platform I\'ve used!"', time: '1 HOUR AGO' },
               { icon: '🔐', title: 'Security Alert', desc: 'New login detected from San Francisco, CA.', time: '3 HOURS AGO' },
             ].map((n, i) => (
               <div key={i} className="flex items-start gap-3">

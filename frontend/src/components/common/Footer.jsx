@@ -3,7 +3,7 @@ import { FaTwitter, FaLinkedin, FaFacebook } from 'react-icons/fa';
 
 const Footer = () => {
   const columns = [
-    { title: 'Prime Net', links: [{ label: 'Home', to: '/' }, { label: 'About Us', to: '/about' }, { label: 'Solutions', to: '/products' }, { label: 'AI Marketplace', to: '/products' }, { label: 'Login', to: '/login' }] },
+    { title: 'Streamkart', links: [{ label: 'Home', to: '/' }, { label: 'About Us', to: '/about' }, { label: 'Solutions', to: '/products' }, { label: 'AI Marketplace', to: '/products' }, { label: 'Login', to: '/login' }] },
     { title: 'Marketplace', links: [{ label: 'Marketplace', to: '/products' }, { label: 'Features', to: '/about' }, { label: 'Enterprise', to: '/about' }, { label: 'Pricing', to: '/products' }, { label: 'Contact', to: '/contact' }] },
     { title: 'Company', links: [{ label: 'About Us', to: '/about' }, { label: 'Upcoming', to: '/about' }, { label: 'Company', to: '/about' }, { label: 'Pricing', to: '/products' }, { label: 'Contact Us', to: '/contact' }] },
     { title: 'Resources', links: [{ label: 'About', to: '/about' }, { label: 'Resources', to: '/about' }, { label: 'FAQs', to: '/contact' }, { label: 'Landing Page', to: '/' }] },
@@ -37,7 +37,7 @@ const Footer = () => {
             <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors"><FaFacebook className="w-5 h-5" /></a>
           </div>
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} Prime Net. All rights reserved.
+            © {new Date().getFullYear()} Streamkart. All rights reserved.
           </p>
         </div>
       </div>

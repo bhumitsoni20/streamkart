@@ -12,7 +12,7 @@ const Checkout = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Top bar */}
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
-        <Link to="/" className="text-xl font-bold text-gray-900"><span className="text-indigo-600">Prime</span> Net</Link>
+        <Link to="/" className="text-xl font-bold text-gray-900"><span className="text-indigo-600">Stream</span>kart</Link>
         <div className="flex items-center gap-2 text-gray-500 text-sm"><HiLockClosed className="w-4 h-4" /> Secure Checkout</div>
         <Link to="/products" className="text-sm text-gray-500 hover:text-gray-700">Cancel</Link>
       </div>
@@ -115,7 +115,7 @@ const Checkout = () => {
                 <HiShieldCheck className="w-5 h-5 text-gray-500" />
               </div>
               <div>
-                <p className="text-gray-900 font-semibold text-sm">Prime Net Money-Back Guarantee</p>
+                <p className="text-gray-900 font-semibold text-sm">Streamkart Money-Back Guarantee</p>
                 <p className="text-gray-500 text-xs">Full refund within 30 days if not satisfied.</p>
               </div>
             </div>

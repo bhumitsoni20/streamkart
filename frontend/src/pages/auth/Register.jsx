@@ -37,7 +37,7 @@ const Register = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Create your account ✨</h1>
-      <p className="text-gray-500 mb-8">Start your journey with Prime Net.</p>
+      <p className="text-gray-500 mb-8">Start your journey with Streamkart.</p>
       <form onSubmit={handleRegister} className="space-y-4">
         <Input label="Full Name" icon={HiUser} placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
         <Input label="Email" type="email" icon={HiMail} placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />

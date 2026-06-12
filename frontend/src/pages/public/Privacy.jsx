@@ -10,7 +10,7 @@ const Privacy = () => (
       <h2 className="text-xl font-semibold text-gray-900">3. Data Security</h2>
       <p>We implement appropriate security measures to protect your personal information. Payment processing is handled by trusted third-party providers (Razorpay and Stripe).</p>
       <h2 className="text-xl font-semibold text-gray-900">4. Contact</h2>
-      <p>For privacy concerns, contact us at privacy@primenet.com.</p>
+      <p>For privacy concerns, contact us at privacy@streamkart.com.</p>
     </div>
   </div>
 );

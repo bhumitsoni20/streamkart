@@ -4,15 +4,15 @@ const Terms = () => (
     <div className="space-y-6 text-gray-600 leading-relaxed">
       <p>Last updated: {new Date().toLocaleDateString()}</p>
       <h2 className="text-xl font-semibold text-gray-900">1. Acceptance of Terms</h2>
-      <p>By accessing or using Prime Net, you agree to be bound by these Terms of Service.</p>
+      <p>By accessing or using Streamkart, you agree to be bound by these Terms of Service.</p>
       <h2 className="text-xl font-semibold text-gray-900">2. User Accounts</h2>
       <p>You must provide accurate information when creating an account. You are responsible for maintaining the security of your account.</p>
       <h2 className="text-xl font-semibold text-gray-900">3. Marketplace</h2>
-      <p>Prime Net acts as a marketplace connecting buyers and sellers of digital subscriptions. We do not guarantee the quality of third-party services.</p>
+      <p>Streamkart acts as a marketplace connecting buyers and sellers of digital subscriptions. We do not guarantee the quality of third-party services.</p>
       <h2 className="text-xl font-semibold text-gray-900">4. Payments & Refunds</h2>
       <p>All payments are processed securely through Razorpay or Stripe. Refund policies are subject to individual seller terms.</p>
       <h2 className="text-xl font-semibold text-gray-900">5. Contact</h2>
-      <p>For questions about these terms, contact us at legal@primenet.com.</p>
+      <p>For questions about these terms, contact us at legal@streamkart.com.</p>
     </div>
   </div>
 );

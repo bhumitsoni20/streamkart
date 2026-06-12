@@ -74,7 +74,7 @@ const SellerApplication = () => {
       <div className="max-w-2xl mx-auto mt-10 text-center bg-white p-10 rounded-2xl border border-gray-200">
         <HiCheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Approved!</h2>
-        <p className="text-gray-500 mb-6">Congratulations! You are now a seller on Prime Net.</p>
+        <p className="text-gray-500 mb-6">Congratulations! You are now a seller on Streamkart.</p>
         <Button onClick={() => window.location.href = '/seller'}>Go to Seller Dashboard</Button>
       </div>
     );
@@ -94,7 +94,7 @@ const SellerApplication = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Seller Application</h1>
-      <p className="text-gray-500 mb-8">Tell us about your business to start selling on Prime Net.</p>
+      <p className="text-gray-500 mb-8">Tell us about your business to start selling on Streamkart.</p>
 
       <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -115,7 +115,7 @@ const SellerApplication = () => {
             required
             rows={4}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
-            placeholder="Tell us what you sell and why you want to join Prime Net..."
+            placeholder="Tell us what you sell and why you want to join Streamkart..."
           />
         </div>
 

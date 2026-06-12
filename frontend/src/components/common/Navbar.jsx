@@ -30,15 +30,11 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-gray-900 hover:opacity-90 transition-opacity">
+            <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+              <HiPlay className="w-5 h-5 ml-0.5" />
             </div>
-            <span className="text-xl font-bold text-gray-900">
-              <span className="text-indigo-600">Prime</span> Net
-            </span>
+            <span className="text-indigo-600">Stream</span>kart
           </Link>
 
           {/* Desktop Nav */}

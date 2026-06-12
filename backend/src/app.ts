@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── Health Check ───────────────────────────────────────
 app.get('/api/health', (_req, res) => {
-  res.json({ success: true, message: 'Prime Net API is running 🚀', timestamp: new Date().toISOString() });
+  res.json({ success: true, message: 'Streamkart API is running 🚀', timestamp: new Date().toISOString() });
 });
 
 // ─── API Routes ─────────────────────────────────────────

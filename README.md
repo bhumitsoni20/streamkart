@@ -1,4 +1,4 @@
-# Prime Net — Digital Subscription Marketplace
+# Streamkart — Digital Subscription Marketplace
 
 A full-stack marketplace for buying and selling digital subscriptions including OTT platforms, AI tools, VPN services, educational platforms, software licenses, cloud storage plans, and premium memberships.
 
