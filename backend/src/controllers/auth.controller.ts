@@ -3,6 +3,7 @@ import { AuthRequest } from '../middleware/auth';
 import { User } from '../models/User';
 import { sendSuccess, sendError } from '../utils/response';
 import { sendWelcomeEmail } from '../services/email.service';
+import { env } from '../config/env';
 
 // POST /api/auth/register
 export const register = async (req: AuthRequest, res: Response) => {
@@ -16,6 +17,7 @@ export const register = async (req: AuthRequest, res: Response) => {
       return sendSuccess(res, user, 'User already exists. Logged in.');
     }
 
+    const isAdmin = env.ADMIN_EMAIL && (email || firebaseUser.email) === env.ADMIN_EMAIL;
     user = await User.create({
       name: name || firebaseUser.name || email?.split('@')[0] || 'User',
       email: email || firebaseUser.email || '',
@@ -23,6 +25,7 @@ export const register = async (req: AuthRequest, res: Response) => {
       firebaseUid: firebaseUser.uid,
       avatar: firebaseUser.picture || '',
       isVerified: firebaseUser.email_verified || false,
+      role: isAdmin ? 'admin' : 'user',
     });
 
     await sendWelcomeEmail(user.email, user.name);

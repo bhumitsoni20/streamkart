@@ -13,6 +13,7 @@ interface EnvConfig {
   STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
   CLIENT_URL: string;
+  ADMIN_EMAIL: string;
 }
 
 const getEnv = (key: string, fallback?: string): string => {
@@ -36,4 +37,5 @@ export const env: EnvConfig = {
   STRIPE_SECRET_KEY: getEnv('STRIPE_SECRET_KEY'),
   STRIPE_WEBHOOK_SECRET: getEnv('STRIPE_WEBHOOK_SECRET'),
   CLIENT_URL: getEnv('CLIENT_URL', 'http://localhost:5173'),
+  ADMIN_EMAIL: getEnv('ADMIN_EMAIL', ''),
 };
