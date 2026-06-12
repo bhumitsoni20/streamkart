@@ -68,12 +68,7 @@ const AuthLayout = () => {
       {/* Right — Auth form */}
       <div className="flex-1 flex flex-col bg-white">
         {/* Top bar */}
-        <div className="flex justify-end p-6">
-          {isLogin ? (
-            <p className="text-sm text-gray-500">New here? <Link to="/register" className="text-indigo-600 font-semibold hover:underline">Sign up</Link></p>
-          ) : (
-            <p className="text-sm text-gray-500">Already have an account? <Link to="/login" className="text-indigo-600 font-semibold hover:underline">Log in</Link></p>
-          )}
+        <div className="flex justify-end p-6 h-14">
         </div>
 
         {/* Form */}
