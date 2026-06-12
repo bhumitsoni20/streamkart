@@ -20,7 +20,7 @@ const Login = () => {
     try {
       await signInWithEmail(email, password);
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       toast.error(error.message || 'Login failed');
     } finally {
@@ -32,7 +32,7 @@ const Login = () => {
     try {
       await signInWithGoogle();
       toast.success('Welcome!');
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       toast.error(error.message || 'Google login failed');
     }

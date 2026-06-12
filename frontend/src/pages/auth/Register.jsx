@@ -23,14 +23,14 @@ const Register = () => {
       await signUpWithEmail(email, password, name);
       await registerUser({ name, email });
       toast.success('Account created!');
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       toast.error(error.message || 'Registration failed');
     } finally { setLoading(false); }
   };
 
   const handleGoogleLogin = async () => {
-    try { await signInWithGoogle(); toast.success('Welcome!'); navigate('/dashboard'); }
+    try { await signInWithGoogle(); toast.success('Welcome!'); navigate('/'); }
     catch (error) { toast.error(error.message || 'Google login failed'); }
   };
 

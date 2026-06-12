@@ -1,7 +1,9 @@
 import Razorpay from 'razorpay';
 import { env } from './env';
 
-export const razorpayInstance = new Razorpay({
-  key_id: env.RAZORPAY_KEY_ID,
-  key_secret: env.RAZORPAY_KEY_SECRET,
-});
+export const razorpayInstance = env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET
+  ? new Razorpay({
+      key_id: env.RAZORPAY_KEY_ID,
+      key_secret: env.RAZORPAY_KEY_SECRET,
+    })
+  : null as any;
