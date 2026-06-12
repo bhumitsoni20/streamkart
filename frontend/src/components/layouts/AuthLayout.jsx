@@ -80,11 +80,16 @@ const AuthLayout = () => {
 
         {/* Bottom login/signup toggle */}
         <div className="flex justify-center pb-8">
-          <div className="flex items-center bg-gray-100 rounded-full p-1">
-            <Link to="/login" className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${isLogin ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>
+          <div className="relative flex items-center bg-gray-50/80 backdrop-blur-xl border border-gray-200/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] rounded-full p-1 w-56">
+            {/* Sliding Pill */}
+            <div 
+              className={`absolute top-1 bottom-1 w-[108px] bg-white/90 rounded-full shadow-sm border border-gray-100 transition-transform duration-300 ease-out ${isLogin ? 'translate-x-0' : 'translate-x-[108px]'}`}
+            />
+            
+            <Link to="/login" className={`relative z-10 flex-1 text-center py-2.5 text-sm font-medium transition-colors duration-300 ${isLogin ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>
               Log in
             </Link>
-            <Link to="/register" className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${!isLogin ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-500'}`}>
+            <Link to="/register" className={`relative z-10 flex-1 text-center py-2.5 text-sm font-medium transition-colors duration-300 ${!isLogin ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>
               Sign up
             </Link>
           </div>
