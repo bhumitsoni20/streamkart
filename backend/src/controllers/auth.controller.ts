@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { User } from '../models/User';
 import { sendSuccess, sendError } from '../utils/response';
-import { sendWelcomeEmail } from '../services/email.service';
+import { sendWelcomeEmail, sendCustomVerificationEmail } from '../services/email.service';
 import { env } from '../config/env';
 
 // POST /api/auth/register
@@ -29,6 +29,8 @@ export const register = async (req: AuthRequest, res: Response) => {
     });
 
     await sendWelcomeEmail(user.email, user.name);
+    // Send our gorgeous custom HTML verification email!
+    await sendCustomVerificationEmail(user.email, user.name);
 
     return sendSuccess(res, user, 'User registered successfully.', 201);
   } catch (error: any) {
@@ -82,6 +84,24 @@ export const updateFCMToken = async (req: AuthRequest, res: Response) => {
 
     await User.findByIdAndUpdate(req.user._id, { fcmToken });
     return sendSuccess(res, null, 'FCM token updated.');
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// POST /api/auth/send-verification
+export const sendVerificationEmail = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = req.user;
+    if (!user) return sendError(res, 'User not found.', 404);
+    if (user.isVerified) return sendError(res, 'Email already verified.', 400);
+
+    const success = await sendCustomVerificationEmail(user.email, user.name);
+    if (success) {
+      return sendSuccess(res, null, 'Verification email sent.');
+    } else {
+      return sendError(res, 'Failed to send verification email.', 500);
+    }
   } catch (error: any) {
     return sendError(res, error.message);
   }

@@ -22,7 +22,6 @@ const Navbar = () => {
   const navLinks = [
     { label: 'Marketplace', to: '/products' },
     { label: 'Features', to: '/about' },
-    { label: 'Enterprise', to: '/about' },
     { label: 'Pricing', to: '/products' },
   ];
 

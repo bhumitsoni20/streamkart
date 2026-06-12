@@ -23,7 +23,7 @@ const Register = () => {
       await signUpWithEmail(email, password, name);
       await registerUser({ name, email });
       toast.success('Account created!');
-      navigate('/');
+      navigate('/verify-email');
     } catch (error) {
       toast.error(error.message || 'Registration failed');
     } finally { setLoading(false); }

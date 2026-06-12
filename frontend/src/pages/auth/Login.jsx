@@ -18,7 +18,12 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signInWithEmail(email, password);
+      const user = await signInWithEmail(email, password);
+      if (!user.emailVerified) {
+        toast.error('Please verify your email to log in.');
+        navigate('/verify-email');
+        return;
+      }
       toast.success('Welcome back!');
       navigate('/');
     } catch (error) {

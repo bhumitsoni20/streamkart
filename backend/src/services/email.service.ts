@@ -1,9 +1,148 @@
+import nodemailer from 'nodemailer';
+import { env } from '../config/env';
 import { logger } from '../utils/logger';
+import { firebaseAuth } from '../config/firebase';
 
-// Placeholder for future email service integration (SendGrid, Mailgun, etc.)
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
+  },
+});
+
+export const sendCustomVerificationEmail = async (email: string, displayName: string) => {
+  try {
+    if (!env.SMTP_USER || !env.SMTP_PASS) {
+      logger.warn('SMTP credentials not configured. Skipping verification email.');
+      return false;
+    }
+
+    const actionCodeSettings = {
+      url: `${env.CLIENT_URL}/login`,
+      handleCodeInApp: false,
+    };
+    
+    // Generate the exact Firebase verification link
+    const link = await firebaseAuth.generateEmailVerificationLink(email, actionCodeSettings);
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  body {
+    background-color: #f9fafb;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  .header {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .logo {
+    display: inline-block;
+    background-color: #4f46e5;
+    color: white;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .title {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .content {
+    padding: 40px 32px;
+    color: #374151;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .greeting {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 16px;
+  }
+  .button {
+    display: inline-block;
+    background-color: #4f46e5;
+    color: #ffffff !important;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 32px 0;
+  }
+  .footer {
+    background-color: #f3f4f6;
+    padding: 24px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">▶</div>
+      <h1 class="title">Welcome to Prime Net!</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">Hi ${displayName || 'there'},</div>
+      <p>Thank you for joining Prime Net &mdash; your ultimate digital subscription marketplace. We're thrilled to have you on board!</p>
+      <p>Before you get started exploring and managing your subscriptions seamlessly, please verify your email address by clicking the button below.</p>
+      
+      <a href="${link}" class="button">Verify Email Address</a>
+      
+      <p style="font-size: 14px; color: #6b7280;">If you didn't create an account with us, you can safely ignore this email.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 Prime Net. All rights reserved.</p>
+      <p>This is an automated message. Please do not reply.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    await transporter.sendMail({
+      from: '"Prime Net" <noreply@primenet.com>',
+      to: email,
+      subject: 'Verify your email for Prime Net',
+      html: htmlContent,
+    });
+    
+    logger.info(`Verification email sent to ${email}`);
+    return true;
+  } catch (error) {
+    logger.error(`Error sending verification email: ${error}`);
+    return false;
+  }
+};
+
 export const sendEmail = async (to: string, subject: string, body: string) => {
   logger.info(`[Email Placeholder] To: ${to}, Subject: ${subject}`);
-  // TODO: Integrate with email service provider
   return true;
 };
 

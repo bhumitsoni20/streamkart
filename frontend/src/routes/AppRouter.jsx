@@ -10,6 +10,7 @@ import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import PhoneLogin from '../pages/auth/PhoneLogin';
 import ForgotPassword from '../pages/auth/ForgotPassword';
+import VerifyEmail from '../pages/auth/VerifyEmail';
 
 // Public Pages
 import Home from '../pages/marketplace/Home';
@@ -65,6 +66,7 @@ const router = createBrowserRouter([
     children: [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
+      { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'phone-login', element: <PhoneLogin /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
     ],
