@@ -26,7 +26,7 @@ const ProductList = () => {
 
   const params = new URLSearchParams();
   params.set('page', page.toString());
-  params.set('limit', '8');
+  params.set('limit', '20');
   if (selectedCats.length > 0) params.set('category', selectedCats[0]);
   if (search) params.set('search', search);
 
