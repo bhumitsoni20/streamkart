@@ -14,11 +14,11 @@ const ProductCard = ({ product }) => {
   return (
     <div className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover-lift">
       <Link to={`/products/${product._id}`}>
-        <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center overflow-hidden">
+        <div className="relative h-48 bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-100 p-4">
           {product.logo ? (
-            <img src={product.logo} alt={product.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <img src={product.logo} alt={product.title} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-sm rounded-lg" />
           ) : (
-            <div className="h-20 w-20 rounded-2xl bg-white/10 flex items-center justify-center text-3xl font-bold text-white">
+            <div className="h-20 w-20 rounded-2xl bg-gray-200 flex items-center justify-center text-3xl font-bold text-gray-400">
               {product.title?.[0]}
             </div>
           )}
@@ -56,7 +56,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         <Button size="sm" className="w-full" onClick={() => addToCart(product)}>
-          View Details
+          Add to Cart
         </Button>
       </div>
     </div>

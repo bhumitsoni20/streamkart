@@ -4,9 +4,14 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
 import { HiShieldCheck, HiLockClosed } from 'react-icons/hi';
+import useCart from '../../hooks/useCart';
 
 const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('credit');
+  const { items: cartItems, total: subtotal } = useCart();
+  
+  const platformFee = subtotal * 0.02;
+  const total = subtotal + platformFee;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -80,28 +85,37 @@ const Checkout = () => {
           <div className="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24">
             <h2 className="text-lg font-bold text-gray-900 mb-5">Order Summary</h2>
 
-            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100">
-              <div className="h-14 w-14 rounded-xl bg-gray-800 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">P</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-gray-900 font-semibold text-sm">Premium Subscription</p>
-                <p className="text-gray-500 text-xs">Annual Subscription</p>
-                <Badge variant="success" className="mt-1 text-[10px]">SAVE 20%</Badge>
-              </div>
-              <p className="text-gray-900 font-bold">₹2,400</p>
-            </div>
+            {cartItems.length === 0 ? (
+              <p className="text-gray-500 text-sm mb-5 pb-5 border-b border-gray-100">Your cart is empty.</p>
+            ) : (
+              cartItems.map((item) => (
+                <div key={item._id} className="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100">
+                  <div className="h-14 w-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
+                    {item.logo ? (
+                      <img src={item.logo} alt={item.title} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <span className="text-gray-400 font-bold text-lg">{item.title?.[0]}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-900 font-semibold text-sm">{item.title}</p>
+                    <p className="text-gray-500 text-xs">Qty: 1</p>
+                  </div>
+                  <p className="text-gray-900 font-bold">₹{item.price}</p>
+                </div>
+              ))
+            )}
 
             <div className="space-y-3 mb-5 pb-5 border-b border-gray-100 text-sm">
-              <div className="flex justify-between"><span className="text-gray-500">Subtotal</span><span className="text-gray-900">₹2,400.00</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Platform Fee (2%)</span><span className="text-gray-900">₹48.00</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Subtotal</span><span className="text-gray-900">₹{subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Platform Fee (2%)</span><span className="text-gray-900">₹{platformFee.toFixed(2)}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Taxes</span><span className="text-gray-900">₹0.00</span></div>
             </div>
 
             <div className="flex justify-between items-baseline mb-5">
               <span className="text-gray-900 font-bold text-lg">Total</span>
               <div className="text-right">
-                <p className="text-indigo-600 font-bold text-2xl">₹2,448.00</p>
+                <p className="text-indigo-600 font-bold text-2xl">₹{total.toFixed(2)}</p>
                 <p className="text-gray-400 text-xs">Billed in INR</p>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProduct } from '../../hooks/useProducts';
 import useCart from '../../hooks/useCart';
 import useWishlistStore from '../../store/wishlistStore';
@@ -13,6 +13,7 @@ import { HiShieldCheck, HiCheckCircle, HiHeart, HiOutlineHeart } from 'react-ico
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data, isLoading } = useProduct(id);
   const { addToCart } = useCart();
   const { toggleItem, isInWishlist } = useWishlistStore();
@@ -38,23 +39,12 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left — Images + Description */}
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden h-80 flex items-center justify-center mb-4">
+          <div className="bg-gray-50 border border-gray-100 rounded-3xl overflow-hidden h-80 flex items-center justify-center mb-8">
             {product.logo ? (
-              <img src={product.logo} alt={product.title} className="max-h-64 object-contain" />
+              <img src={product.logo} alt={product.title} className="max-h-64 max-w-full object-contain drop-shadow-sm rounded-2xl" />
             ) : (
-              <div className="h-24 w-24 rounded-3xl bg-white/10 flex items-center justify-center text-5xl font-bold text-white">{product.title?.[0]}</div>
+              <div className="h-24 w-24 rounded-3xl bg-gray-200 flex items-center justify-center text-5xl font-bold text-gray-400">{product.title?.[0]}</div>
             )}
-          </div>
-
-          {/* Thumbnail strip */}
-          <div className="flex gap-3 mb-8">
-            {[1,2,3,4].map((i) => (
-              <div key={i} className={`h-20 w-24 rounded-xl bg-gray-200 overflow-hidden border-2 ${i === 1 ? 'border-indigo-500' : 'border-transparent'} cursor-pointer`}>
-                <div className="h-full w-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-white text-xs">
-                  {i === 4 ? `+12` : ''}
-                </div>
-              </div>
-            ))}
           </div>
 
           {/* Product Info */}
@@ -122,7 +112,7 @@ const ProductDetail = () => {
               ))}
             </div>
 
-            <Button size="lg" className="w-full mb-3" onClick={() => addToCart(product)}>Buy Now</Button>
+            <Button size="lg" className="w-full mb-3" onClick={() => { addToCart(product); navigate('/checkout'); }}>Buy Now</Button>
             <Button variant="secondary" size="lg" className="w-full mb-2">Start Free Trial</Button>
             <Button 
               variant="outline" 
