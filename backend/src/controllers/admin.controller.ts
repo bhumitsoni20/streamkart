@@ -4,6 +4,7 @@ import { User } from '../models/User';
 import { Product } from '../models/Product';
 import { Order } from '../models/Order';
 import { sendSuccess, sendError, sendPaginated } from '../utils/response';
+import { firebaseAuth } from '../config/firebase';
 
 // GET /api/admin/stats
 export const getDashboardStats = async (req: AuthRequest, res: Response) => {
@@ -58,6 +59,31 @@ export const getUsers = async (req: Request, res: Response) => {
     ]);
 
     return sendPaginated(res, users, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// GET /api/admin/products
+export const getAllProducts = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+    if (req.query.status) filter.status = req.query.status;
+
+    const [products, total] = await Promise.all([
+      Product.find(filter)
+        .populate('seller', 'name email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Product.countDocuments(filter),
+    ]);
+
+    return sendPaginated(res, products, page, limit, total);
   } catch (error: any) {
     return sendError(res, error.message);
   }
@@ -180,6 +206,29 @@ export const updateApplicationStatus = async (req: AuthRequest, res: Response) =
     }
 
     return sendSuccess(res, application, `Application ${status}.`);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// DELETE /api/admin/users/:id
+export const deleteUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return sendError(res, 'User not found.', 404);
+
+    if (user.role === 'admin') {
+      return sendError(res, 'Cannot delete an admin user.', 403);
+    }
+
+    try {
+      await firebaseAuth.deleteUser(user.firebaseUid);
+    } catch (err) {
+      console.log('Firebase user deletion skipped or failed');
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    return sendSuccess(res, null, 'User deleted successfully.');
   } catch (error: any) {
     return sendError(res, error.message);
   }

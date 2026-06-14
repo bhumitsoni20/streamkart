@@ -16,7 +16,7 @@ const ManageApplications = () => {
   const fetchApplications = async () => {
     try {
       const res = await apiGet('/admin/applications');
-      setApplications(res.data);
+      setApplications(res.data || []);
     } catch (error) {
       toast.error('Failed to load applications');
     } finally {

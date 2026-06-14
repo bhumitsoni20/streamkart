@@ -1,13 +1,43 @@
+import { useEffect, useState } from 'react';
 import { HiShoppingBag, HiUsers, HiStar, HiExclamation, HiPlus, HiPencil, HiDotsVertical } from 'react-icons/hi';
 import useAuthStore from '../../store/authStore';
+import { getSellerProducts } from '../../services/product.service';
+import { getSellerOrders } from '../../services/order.service';
 import StatsCard from '../../components/common/StatsCard';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Avatar from '../../components/ui/Avatar';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const SellerDashboard = () => {
   const { user } = useAuthStore();
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [prodRes, orderRes] = await Promise.all([
+          getSellerProducts('limit=10'),
+          getSellerOrders()
+        ]);
+        setProducts(prodRes.data || []);
+        setOrders(orderRes.data || []);
+      } catch (error) {
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const totalSales = orders.filter(o => o.orderStatus === 'delivered' || o.paymentStatus === 'paid').reduce((acc, curr) => acc + (curr.amount || curr.totalAmount || 0), 0);
+  const pendingOrders = orders.filter(o => o.orderStatus === 'pending' || o.orderStatus === 'processing').length;
+  // unique customers
+  const uniqueCustomers = new Set(orders.map(o => o.user?._id)).size;
 
   return (
     <div>
@@ -17,33 +47,25 @@ const SellerDashboard = () => {
           <p className="text-gray-500 text-sm">Welcome back, {user?.name}. Here's your shop performance.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <input type="text" placeholder="Search data..." className="bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-          </div>
           <Avatar src={user?.avatar} name={user?.name} size="sm" />
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatsCard icon={HiShoppingBag} label="Total Sales" value="₹1,28,430" color="blue" trend={12.5} />
-        <StatsCard icon={HiUsers} label="Active Customers" value="1,248" color="green" trend={4.2} />
-        <StatsCard icon={HiStar} label="Avg Rating" value="4.9 / 5.0" color="amber" />
-        <StatsCard icon={HiExclamation} label="Pending Orders" value="42" color="red" alert />
+        <StatsCard icon={HiShoppingBag} label="Total Sales" value={loading ? '...' : `₹${totalSales.toLocaleString()}`} color="blue" />
+        <StatsCard icon={HiUsers} label="Active Customers" value={loading ? '...' : uniqueCustomers} color="green" />
+        <StatsCard icon={HiStar} label="Total Products" value={loading ? '...' : products.length} color="amber" />
+        <StatsCard icon={HiExclamation} label="Pending Orders" value={loading ? '...' : pendingOrders} color="red" alert={pendingOrders > 0} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Revenue Forecast */}
+        {/* Revenue Forecast (MOCK) */}
         <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-semibold text-gray-900">Revenue Forecast</h2>
               <p className="text-gray-500 text-sm">Estimated earnings for Q3 2024</p>
-            </div>
-            <div className="flex bg-gray-100 rounded-lg p-0.5">
-              <button className="px-3 py-1.5 text-xs font-medium bg-white rounded-md shadow-sm text-gray-900">Monthly</button>
-              <button className="px-3 py-1.5 text-xs font-medium text-gray-500">Yearly</button>
             </div>
           </div>
           {/* Chart placeholder — bar chart */}
@@ -63,90 +85,64 @@ const SellerDashboard = () => {
         <div className="bg-white border border-gray-200 rounded-2xl p-5">
           <h3 className="font-semibold text-gray-900 mb-3">Available for Payout</h3>
           <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider mb-1">Balance</p>
-          <p className="text-3xl font-bold text-gray-900 mb-1">₹14,205.50</p>
-          <p className="text-gray-500 text-sm mb-5">Last payout: 3 days ago</p>
+          <p className="text-3xl font-bold text-gray-900 mb-1">₹{loading ? '...' : totalSales.toLocaleString()}</p>
+          <p className="text-gray-500 text-sm mb-5">Auto-payout Enabled (Weekly)</p>
           <Button className="w-full mb-2">Withdraw Funds</Button>
           <Button variant="secondary" className="w-full mb-3">Payout Settings</Button>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Auto-payout</span>
-            <span className="text-indigo-600 font-medium">Enabled (Weekly)</span>
-          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Notifications */}
+        {/* Notifications (MOCK) */}
         <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Notifications</h3>
-            <Link to="/dashboard/notifications" className="text-indigo-600 text-sm font-medium hover:text-indigo-500">View all</Link>
           </div>
           <div className="space-y-4">
-            {[
-              { icon: '📦', title: 'New Order #8429', desc: 'Premium Design Kit purchased by Alex Reed.', time: '2 MINS AGO' },
-              { icon: '⭐', title: '5-Star Review Received', desc: '"Streamkart is the fastest platform I\'ve used!"', time: '1 HOUR AGO' },
-              { icon: '🔐', title: 'Security Alert', desc: 'New login detected from San Francisco, CA.', time: '3 HOURS AGO' },
-            ].map((n, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className={`h-10 w-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 ${i === 2 ? 'bg-blue-50' : i === 1 ? 'bg-amber-50' : 'bg-purple-50'}`}>{n.icon}</div>
-                <div>
-                  <p className="text-gray-900 font-medium text-sm">{n.title}</p>
-                  <p className="text-gray-500 text-sm">{n.desc}</p>
-                  <p className="text-gray-400 text-xs mt-1 uppercase tracking-wider font-medium">{n.time}</p>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-purple-50">📦</div>
+              <div>
+                <p className="text-gray-900 font-medium text-sm">Welcome to Streamkart!</p>
+                <p className="text-gray-500 text-sm">Start listing your digital products today.</p>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
         {/* Product Management Table */}
         <div className="lg:col-span-3 bg-white border border-gray-200 rounded-2xl">
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">Product Management</h3>
-            <Link to="/seller/products/new"><Button size="sm"><HiPlus className="w-4 h-4" /> Add Product</Button></Link>
+            <h3 className="font-semibold text-gray-900">Recent Products</h3>
+            <Link to="/seller/products/new"><Button size="sm"><HiPlus className="w-4 h-4 mr-1" /> Add Product</Button></Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead><tr className="border-b border-gray-100 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <thead><tr className="border-b border-gray-100 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50">
                 <th className="p-4">Product Name</th>
                 <th className="p-4">Status</th>
-                <th className="p-4">Inventory</th>
                 <th className="p-4">Price</th>
-                <th className="p-4">Actions</th>
               </tr></thead>
               <tbody>
-                {[
-                  { name: 'Stripe UI Kit', status: 'Active', inv: 'Unlimited', price: '₹89.00' },
-                  { name: 'Neon Analytics Pro', status: 'Draft', inv: '50 Seats', price: '₹149.00' },
-                  { name: 'Global Edge Node', status: 'Out of Stock', inv: '0 Units', price: '₹299.00' },
-                ].map((p, i) => (
-                  <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-gray-800 flex items-center justify-center text-white text-sm font-bold">{p.name[0]}</div>
-                        <span className="text-gray-900 font-medium text-sm">{p.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-4"><Badge variant={p.status === 'Active' ? 'active' : p.status === 'Draft' ? 'draft' : 'danger'}>{p.status.toUpperCase()}</Badge></td>
-                    <td className="p-4"><span className="text-gray-600 text-sm">{p.inv}</span></td>
-                    <td className="p-4"><span className="text-gray-900 font-medium text-sm">{p.price}</span></td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"><HiPencil className="w-4 h-4" /></button>
-                        <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"><HiDotsVertical className="w-4 h-4" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {loading ? (
+                  <tr><td colSpan={3} className="p-8 text-center text-gray-500">Loading products...</td></tr>
+                ) : products.length === 0 ? (
+                  <tr><td colSpan={3} className="p-8 text-center text-gray-500">No products yet. Add your first product!</td></tr>
+                ) : (
+                  products.map((p) => (
+                    <tr key={p._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-sm font-bold">{p.title[0]}</div>
+                          <span className="text-gray-900 font-medium text-sm">{p.title}</span>
+                        </div>
+                      </td>
+                      <td className="p-4"><Badge variant={p.status === 'active' ? 'success' : p.status === 'pending' ? 'warning' : 'gray'}>{p.status.toUpperCase()}</Badge></td>
+                      <td className="p-4"><span className="text-gray-900 font-medium text-sm">₹{p.price.toLocaleString()}</span></td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
-          </div>
-          <div className="flex items-center justify-between p-4 border-t border-gray-100 text-sm text-gray-500">
-            <span>Showing 3 of 124 products</span>
-            <div className="flex gap-1">
-              <Button variant="secondary" size="sm">Prev</Button>
-              <Button variant="secondary" size="sm">Next</Button>
-            </div>
           </div>
         </div>
       </div>
