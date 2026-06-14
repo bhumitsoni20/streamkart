@@ -3,22 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import toast from 'react-hot-toast';
+import { useCreateProduct } from '../../hooks/useProducts';
 
 const categories = ['ott', 'ai-tools', 'vpn', 'education', 'software', 'cloud-storage', 'premium-membership'];
 
 const AddProduct = () => {
   const navigate = useNavigate();
+  const createMutation = useCreateProduct();
   const [form, setForm] = useState({ title: '', logo: '', description: '', price: '', category: 'ai-tools', features: '', deliveryType: 'instant' });
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      toast.success('Product created!');
-      navigate('/seller/products');
-    } catch { toast.error('Failed to create product'); }
-    finally { setLoading(false); }
+    
+    // Process features into an array
+    const featuresArray = form.features ? form.features.split(',').map(f => f.trim()).filter(f => f) : [];
+    
+    createMutation.mutate({
+      ...form,
+      price: Number(form.price),
+      features: featuresArray
+    }, {
+      onSuccess: () => {
+        toast.success('Product created!');
+        navigate('/seller/products');
+      },
+      onError: (err) => {
+        toast.error(err.message || 'Failed to create product');
+      }
+    });
   };
 
   return (
@@ -42,8 +54,8 @@ const AddProduct = () => {
         </div>
         <Input label="Features (comma-separated)" placeholder="Feature 1, Feature 2, Feature 3" value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} />
         <div className="flex gap-3 pt-2">
-          <Button type="submit" loading={loading}>Create Product</Button>
-          <Button variant="secondary" onClick={() => navigate('/seller/products')}>Cancel</Button>
+          <Button type="submit" loading={createMutation.isPending}>Create Product</Button>
+          <Button variant="secondary" onClick={() => navigate('/seller/products')} disabled={createMutation.isPending}>Cancel</Button>
         </div>
       </form>
     </div>

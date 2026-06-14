@@ -65,10 +65,10 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
       features,
       duration,
       seller: req.user._id,
-      status: 'pending',
+      status: 'active', // Automatically approve products
     });
 
-    return sendSuccess(res, product, 'Product created. Pending approval.', 201);
+    return sendSuccess(res, product, 'Product created and is now live.', 201);
   } catch (error: any) {
     return sendError(res, error.message);
   }
