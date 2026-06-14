@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HiMenu, HiX, HiShoppingCart, HiBell, HiSearch, HiPlay } from 'react-icons/hi';
 import useAuthStore from '../../store/authStore';
@@ -10,9 +10,24 @@ import Button from '../ui/Button';
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const { user, isAuthenticated } = useAuthStore();
   const itemCount = useCartStore((s) => s.items.length);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    if (profileOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [profileOpen]);
 
   const handleLogout = async () => {
     await signOut();
@@ -61,10 +76,13 @@ const Navbar = () => {
                 <button onClick={() => navigate('/search')} className="p-2 text-gray-500 hover:text-gray-700 transition-colors hidden sm:block">
                   <HiSearch className="w-5 h-5" />
                 </button>
+                <Link to="/wishlist" className="relative p-2 text-gray-500 hover:text-pink-500 transition-colors hidden sm:block">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                </Link>
                 <Link to="/dashboard/notifications" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <HiBell className="w-5 h-5" />
                 </Link>
-                <Link to="/products" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
+                <Link to="/cart" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <HiShoppingCart className="w-5 h-5" />
                   {itemCount > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 h-4.5 w-4.5 rounded-full bg-indigo-600 text-[10px] font-bold text-white flex items-center justify-center">
@@ -72,7 +90,7 @@ const Navbar = () => {
                     </span>
                   )}
                 </Link>
-                <div className="relative ml-1">
+                <div className="relative ml-1" ref={dropdownRef}>
                   <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <Avatar src={user?.avatar} name={user?.name} size="sm" />
                   </button>

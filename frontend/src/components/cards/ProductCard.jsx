@@ -4,11 +4,12 @@ import Badge from '../ui/Badge';
 import Rating from '../ui/Rating';
 import Button from '../ui/Button';
 import useCart from '../../hooks/useCart';
-import { useState } from 'react';
+import useWishlistStore from '../../store/wishlistStore';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
-  const [liked, setLiked] = useState(false);
+  const { toggleItem, isInWishlist } = useWishlistStore();
+  const liked = isInWishlist(product._id);
 
   return (
     <div className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover-lift">
@@ -27,7 +28,7 @@ const ProductCard = ({ product }) => {
           </div>
           {/* Wishlist */}
           <button
-            onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
+            onClick={(e) => { e.preventDefault(); toggleItem(product); }}
             className="absolute top-3 left-3 h-8 w-8 rounded-full bg-white/90 flex items-center justify-center shadow-sm hover:bg-white transition-colors"
           >
             {liked ? <HiHeart className="w-4 h-4 text-red-500" /> : <HiOutlineHeart className="w-4 h-4 text-gray-500" />}

@@ -2,22 +2,26 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProduct } from '../../hooks/useProducts';
 import useCart from '../../hooks/useCart';
+import useWishlistStore from '../../store/wishlistStore';
 import Rating from '../../components/ui/Rating';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
 import ReviewCard from '../../components/cards/ReviewCard';
 import Avatar from '../../components/ui/Avatar';
-import { HiShieldCheck, HiCheckCircle } from 'react-icons/hi';
+import { HiShieldCheck, HiCheckCircle, HiHeart, HiOutlineHeart } from 'react-icons/hi';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { data, isLoading } = useProduct(id);
   const { addToCart } = useCart();
+  const { toggleItem, isInWishlist } = useWishlistStore();
   const [billing, setBilling] = useState('monthly');
 
   if (isLoading) return <div className="flex justify-center py-32"><Spinner size="lg" /></div>;
   const product = data?.data;
+  const liked = product ? isInWishlist(product._id) : false;
+
   if (!product) return <div className="text-center py-32 text-gray-500">Product not found</div>;
 
   return (
@@ -120,6 +124,15 @@ const ProductDetail = () => {
 
             <Button size="lg" className="w-full mb-3" onClick={() => addToCart(product)}>Buy Now</Button>
             <Button variant="secondary" size="lg" className="w-full mb-2">Start Free Trial</Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className={`w-full mb-2 flex items-center justify-center gap-2 ${liked ? 'text-pink-600 border-pink-200 bg-pink-50' : 'text-gray-600 border-gray-200'}`}
+              onClick={() => toggleItem(product)}
+            >
+              {liked ? <HiHeart className="w-5 h-5 text-pink-500" /> : <HiOutlineHeart className="w-5 h-5" />}
+              {liked ? 'Added to Wishlist' : 'Save to Wishlist'}
+            </Button>
             <p className="text-xs text-gray-400 text-center">No credit card required for trial</p>
 
             {/* Seller Card */}

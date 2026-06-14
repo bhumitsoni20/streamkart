@@ -20,6 +20,8 @@ const ProductList = lazy(() => import('../pages/marketplace/ProductList'));
 const ProductDetail = lazy(() => import('../pages/marketplace/ProductDetail'));
 const Search = lazy(() => import('../pages/marketplace/Search'));
 const Checkout = lazy(() => import('../pages/marketplace/Checkout'));
+const Cart = lazy(() => import('../pages/marketplace/Cart'));
+const Wishlist = lazy(() => import('../pages/marketplace/Wishlist'));
 const About = lazy(() => import('../pages/public/About'));
 const Contact = lazy(() => import('../pages/public/Contact'));
 const Privacy = lazy(() => import('../pages/public/Privacy'));
@@ -63,6 +65,8 @@ const router = createBrowserRouter([
       { index: true, element: withSuspense(Home) },
       { path: 'products', element: withSuspense(ProductList) },
       { path: 'products/:id', element: withSuspense(ProductDetail) },
+      { path: 'cart', element: withSuspense(Cart) },
+      { path: 'wishlist', element: withSuspense(Wishlist) },
       { path: 'search', element: withSuspense(Search) },
       { path: 'checkout', element: withSuspense(Checkout) },
       { path: 'about', element: withSuspense(About) },
