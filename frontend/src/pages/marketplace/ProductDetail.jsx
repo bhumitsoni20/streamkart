@@ -106,7 +106,7 @@ const ProductDetail = () => {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button size="lg" className="flex-1 py-4 text-lg" onClick={() => { addToCart(product); navigate('/checkout'); }}>Buy Now</Button>
-              <Button variant="secondary" size="lg" className="flex-1 py-4 text-lg">Start Free Trial</Button>
+              <Button variant="secondary" size="lg" className="flex-1 py-4 text-lg" onClick={() => addToCart(product)}>Add to Cart</Button>
             </div>
             
             <div className="flex items-center justify-between border-t border-gray-100 pt-6">
