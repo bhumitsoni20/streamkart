@@ -2,8 +2,22 @@ import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 import SearchBar from '../ui/SearchBar';
 import { HiShieldCheck } from 'react-icons/hi';
+import { useQuery } from '@tanstack/react-query';
+import { getPublicStats } from '../../services/public.service';
 
 const HeroSection = ({ onSearch }) => {
+  const { data: stats } = useQuery({
+    queryKey: ['publicStats'],
+    queryFn: async () => {
+      const response = await getPublicStats();
+      return response.data;
+    },
+  });
+
+  const userCountText = stats?.totalUsers !== undefined
+    ? `${stats.totalUsers.toLocaleString()}+` 
+    : '50k+';
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
       {/* Grid pattern background */}
@@ -19,7 +33,7 @@ const HeroSection = ({ onSearch }) => {
 
         <div className="flex items-center justify-center gap-2 text-gray-500 animate-slideUp animate-stagger-2">
           <HiShieldCheck className="w-5 h-5 text-indigo-500" />
-          <span className="text-sm font-medium">Trusted by <span className="text-indigo-600 font-semibold">50k+</span> users</span>
+          <span className="text-sm font-medium">Trusted by <span className="text-indigo-600 font-semibold">{userCountText}</span> users</span>
         </div>
       </div>
     </section>

@@ -1,8 +1,22 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getPublicStats } from '../../services/public.service';
 
 const AuthLayout = () => {
   const location = useLocation();
   const isLogin = location.pathname === '/login' || location.pathname === '/phone-login' || location.pathname === '/forgot-password';
+
+  const { data: stats } = useQuery({
+    queryKey: ['publicStats'],
+    queryFn: async () => {
+      const response = await getPublicStats();
+      return response.data;
+    },
+  });
+
+  const userCountText = stats?.totalUsers !== undefined
+    ? `${stats.totalUsers.toLocaleString()}+` 
+    : '10K+';
 
   return (
     <div className="min-h-screen flex">
@@ -60,7 +74,7 @@ const AuthLayout = () => {
           <div className="flex items-center gap-6 text-gray-400 text-sm">
             <span className="flex items-center gap-1.5">✓ Secure payments</span>
             <span className="flex items-center gap-1.5">⏱ Cancel anytime</span>
-            <span className="flex items-center gap-1.5">👥 Trusted by 10K+ users</span>
+            <span className="flex items-center gap-1.5">👥 Trusted by {userCountText} users</span>
           </div>
         </div>
       </div>

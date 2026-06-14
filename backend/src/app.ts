@@ -49,6 +49,18 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/seller', sellerRoutes);
 
+import { User } from './models/User';
+import { sendSuccess, sendError } from './utils/response';
+
+app.get('/api/public/stats', async (_req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    return sendSuccess(res, { totalUsers });
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+});
+
 // ─── 404 Handler ────────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ success: false, message: 'Route not found.' });
