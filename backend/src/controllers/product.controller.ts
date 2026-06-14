@@ -29,7 +29,7 @@ export const getProducts = async (req: Request, res: Response) => {
     else sort.createdAt = -1;
 
     const [products, total] = await Promise.all([
-      Product.find(filter).populate('seller', 'name avatar').sort(sort).skip(skip).limit(limit),
+      Product.find(filter).populate('seller', 'name avatar').sort(sort).skip(skip).limit(limit).lean(),
       Product.countDocuments(filter),
     ]);
 
@@ -42,7 +42,7 @@ export const getProducts = async (req: Request, res: Response) => {
 // GET /api/products/:id
 export const getProduct = async (req: Request, res: Response) => {
   try {
-    const product = await Product.findById(req.params.id).populate('seller', 'name avatar email');
+    const product = await Product.findById(req.params.id).populate('seller', 'name avatar email').lean();
     if (!product) return sendError(res, 'Product not found.', 404);
     return sendSuccess(res, product);
   } catch (error: any) {
@@ -120,7 +120,7 @@ export const getSellerProducts = async (req: AuthRequest, res: Response) => {
     const skip = (page - 1) * limit;
 
     const [products, total] = await Promise.all([
-      Product.find({ seller: req.user._id }).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Product.find({ seller: req.user._id }).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       Product.countDocuments({ seller: req.user._id }),
     ]);
 

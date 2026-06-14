@@ -23,7 +23,8 @@ export const getDashboardStats = async (req: AuthRequest, res: Response) => {
       .populate('user', 'name email')
       .populate('product', 'title')
       .sort({ createdAt: -1 })
-      .limit(10);
+      .limit(10)
+      .lean();
 
     return sendSuccess(res, {
       totalUsers,
@@ -54,7 +55,7 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 
     const [users, total] = await Promise.all([
-      User.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      User.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       User.countDocuments(filter),
     ]);
 
@@ -79,7 +80,8 @@ export const getAllProducts = async (req: Request, res: Response) => {
         .populate('seller', 'name email')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       Product.countDocuments(filter),
     ]);
 
@@ -145,7 +147,8 @@ export const getAllOrders = async (req: Request, res: Response) => {
         .populate('seller', 'name')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       Order.countDocuments(),
     ]);
 
@@ -173,7 +176,8 @@ export const getApplications = async (req: Request, res: Response) => {
         .populate('user', 'name email avatar')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       SellerApplication.countDocuments(filter),
     ]);
 

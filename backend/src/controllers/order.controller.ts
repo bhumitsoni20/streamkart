@@ -56,7 +56,8 @@ export const getMyOrders = async (req: AuthRequest, res: Response) => {
         .populate('seller', 'name')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       Order.countDocuments({ user: req.user._id }),
     ]);
 
@@ -72,7 +73,8 @@ export const getOrder = async (req: AuthRequest, res: Response) => {
     const order = await Order.findById(req.params.id)
       .populate('product')
       .populate('seller', 'name email')
-      .populate('user', 'name email');
+      .populate('user', 'name email')
+      .lean();
 
     if (!order) return sendError(res, 'Order not found.', 404);
 
@@ -129,7 +131,8 @@ export const getSellerOrders = async (req: AuthRequest, res: Response) => {
         .populate('user', 'name email')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       Order.countDocuments({ seller: req.user._id }),
     ]);
 

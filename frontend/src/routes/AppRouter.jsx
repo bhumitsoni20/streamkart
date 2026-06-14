@@ -1,76 +1,85 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MainLayout from '../components/layouts/MainLayout';
 import AuthLayout from '../components/layouts/AuthLayout';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
+import PageLoader from '../components/ui/PageLoader';
 
-// Auth Pages
-import Login from '../pages/auth/Login';
-import Register from '../pages/auth/Register';
-import PhoneLogin from '../pages/auth/PhoneLogin';
-import ForgotPassword from '../pages/auth/ForgotPassword';
-import VerifyEmail from '../pages/auth/VerifyEmail';
+// Auth Pages (Lazy Loaded)
+const Login = lazy(() => import('../pages/auth/Login'));
+const Register = lazy(() => import('../pages/auth/Register'));
+const PhoneLogin = lazy(() => import('../pages/auth/PhoneLogin'));
+const ForgotPassword = lazy(() => import('../pages/auth/ForgotPassword'));
+const VerifyEmail = lazy(() => import('../pages/auth/VerifyEmail'));
 
-// Public Pages
-import Home from '../pages/marketplace/Home';
-import ProductList from '../pages/marketplace/ProductList';
-import ProductDetail from '../pages/marketplace/ProductDetail';
-import Search from '../pages/marketplace/Search';
-import Checkout from '../pages/marketplace/Checkout';
-import About from '../pages/public/About';
-import Contact from '../pages/public/Contact';
-import Privacy from '../pages/public/Privacy';
-import Terms from '../pages/public/Terms';
-import NotFound from '../pages/public/NotFound';
+// Public Pages (Lazy Loaded)
+const Home = lazy(() => import('../pages/marketplace/Home'));
+const ProductList = lazy(() => import('../pages/marketplace/ProductList'));
+const ProductDetail = lazy(() => import('../pages/marketplace/ProductDetail'));
+const Search = lazy(() => import('../pages/marketplace/Search'));
+const Checkout = lazy(() => import('../pages/marketplace/Checkout'));
+const About = lazy(() => import('../pages/public/About'));
+const Contact = lazy(() => import('../pages/public/Contact'));
+const Privacy = lazy(() => import('../pages/public/Privacy'));
+const Terms = lazy(() => import('../pages/public/Terms'));
+const NotFound = lazy(() => import('../pages/public/NotFound'));
 
-// Dashboard Pages
-import Dashboard from '../pages/dashboard/Dashboard';
-import Orders from '../pages/dashboard/Orders';
-import OrderDetail from '../pages/dashboard/OrderDetail';
-import Profile from '../pages/dashboard/Profile';
-import Notifications from '../pages/dashboard/Notifications';
-import SellerApplication from '../pages/dashboard/SellerApplication';
+// Dashboard Pages (Lazy Loaded)
+const Dashboard = lazy(() => import('../pages/dashboard/Dashboard'));
+const Orders = lazy(() => import('../pages/dashboard/Orders'));
+const OrderDetail = lazy(() => import('../pages/dashboard/OrderDetail'));
+const Profile = lazy(() => import('../pages/dashboard/Profile'));
+const Notifications = lazy(() => import('../pages/dashboard/Notifications'));
+const SellerApplication = lazy(() => import('../pages/dashboard/SellerApplication'));
 
-// Seller Pages
-import SellerDashboard from '../pages/seller/SellerDashboard';
-import AddProduct from '../pages/seller/AddProduct';
-import EditProduct from '../pages/seller/EditProduct';
-import SellerProducts from '../pages/seller/SellerProducts';
-import SellerOrders from '../pages/seller/SellerOrders';
+// Seller Pages (Lazy Loaded)
+const SellerDashboard = lazy(() => import('../pages/seller/SellerDashboard'));
+const AddProduct = lazy(() => import('../pages/seller/AddProduct'));
+const EditProduct = lazy(() => import('../pages/seller/EditProduct'));
+const SellerProducts = lazy(() => import('../pages/seller/SellerProducts'));
+const SellerOrders = lazy(() => import('../pages/seller/SellerOrders'));
 
-// Admin Pages
-import AdminDashboard from '../pages/admin/AdminDashboard';
-import ManageUsers from '../pages/admin/ManageUsers';
-import ManageProducts from '../pages/admin/ManageProducts';
-import ManageOrders from '../pages/admin/ManageOrders';
-import ManageApplications from '../pages/admin/ManageApplications';
+// Admin Pages (Lazy Loaded)
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
+const ManageUsers = lazy(() => import('../pages/admin/ManageUsers'));
+const ManageProducts = lazy(() => import('../pages/admin/ManageProducts'));
+const ManageOrders = lazy(() => import('../pages/admin/ManageOrders'));
+const ManageApplications = lazy(() => import('../pages/admin/ManageApplications'));
+
+// Higher-order component to wrap lazy components in Suspense
+const withSuspense = (Component) => (
+  <Suspense fallback={<PageLoader />}>
+    <Component />
+  </Suspense>
+);
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: 'products', element: <ProductList /> },
-      { path: 'products/:id', element: <ProductDetail /> },
-      { path: 'search', element: <Search /> },
-      { path: 'checkout', element: <Checkout /> },
-      { path: 'about', element: <About /> },
-      { path: 'contact', element: <Contact /> },
-      { path: 'privacy', element: <Privacy /> },
-      { path: 'terms', element: <Terms /> },
+      { index: true, element: withSuspense(Home) },
+      { path: 'products', element: withSuspense(ProductList) },
+      { path: 'products/:id', element: withSuspense(ProductDetail) },
+      { path: 'search', element: withSuspense(Search) },
+      { path: 'checkout', element: withSuspense(Checkout) },
+      { path: 'about', element: withSuspense(About) },
+      { path: 'contact', element: withSuspense(Contact) },
+      { path: 'privacy', element: withSuspense(Privacy) },
+      { path: 'terms', element: withSuspense(Terms) },
     ],
   },
   {
     path: '/',
     element: <AuthLayout />,
     children: [
-      { path: 'login', element: <Login /> },
-      { path: 'register', element: <Register /> },
-      { path: 'verify-email', element: <VerifyEmail /> },
-      { path: 'phone-login', element: <PhoneLogin /> },
-      { path: 'forgot-password', element: <ForgotPassword /> },
+      { path: 'login', element: withSuspense(Login) },
+      { path: 'register', element: withSuspense(Register) },
+      { path: 'verify-email', element: withSuspense(VerifyEmail) },
+      { path: 'phone-login', element: withSuspense(PhoneLogin) },
+      { path: 'forgot-password', element: withSuspense(ForgotPassword) },
     ],
   },
   {
@@ -81,12 +90,12 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: 'orders', element: <Orders /> },
-      { path: 'orders/:id', element: <OrderDetail /> },
-      { path: 'profile', element: <Profile /> },
-      { path: 'notifications', element: <Notifications /> },
-      { path: 'apply-seller', element: <SellerApplication /> },
+      { index: true, element: withSuspense(Dashboard) },
+      { path: 'orders', element: withSuspense(Orders) },
+      { path: 'orders/:id', element: withSuspense(OrderDetail) },
+      { path: 'profile', element: withSuspense(Profile) },
+      { path: 'notifications', element: withSuspense(Notifications) },
+      { path: 'apply-seller', element: withSuspense(SellerApplication) },
     ],
   },
   {
@@ -97,11 +106,11 @@ const router = createBrowserRouter([
       </RoleRoute>
     ),
     children: [
-      { index: true, element: <SellerDashboard /> },
-      { path: 'products', element: <SellerProducts /> },
-      { path: 'products/new', element: <AddProduct /> },
-      { path: 'products/:id/edit', element: <EditProduct /> },
-      { path: 'orders', element: <SellerOrders /> },
+      { index: true, element: withSuspense(SellerDashboard) },
+      { path: 'products', element: withSuspense(SellerProducts) },
+      { path: 'products/new', element: withSuspense(AddProduct) },
+      { path: 'products/:id/edit', element: withSuspense(EditProduct) },
+      { path: 'orders', element: withSuspense(SellerOrders) },
     ],
   },
   {
@@ -112,14 +121,14 @@ const router = createBrowserRouter([
       </RoleRoute>
     ),
     children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: 'users', element: <ManageUsers /> },
-      { path: 'products', element: <ManageProducts /> },
-      { path: 'orders', element: <ManageOrders /> },
-      { path: 'applications', element: <ManageApplications /> },
+      { index: true, element: withSuspense(AdminDashboard) },
+      { path: 'users', element: withSuspense(ManageUsers) },
+      { path: 'products', element: withSuspense(ManageProducts) },
+      { path: 'orders', element: withSuspense(ManageOrders) },
+      { path: 'applications', element: withSuspense(ManageApplications) },
     ],
   },
-  { path: '*', element: <NotFound /> },
+  { path: '*', element: withSuspense(NotFound) },
 ]);
 
 const AppRouter = () => <RouterProvider router={router} />;

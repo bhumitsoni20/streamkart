@@ -1,37 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllOrders } from '../../services/admin.service';
 import { updateOrderStatus } from '../../services/order.service';
-import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import dayjs from 'dayjs';
 
 const ManageOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchOrders = async () => {
-    try {
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['adminOrders'],
+    queryFn: async () => {
       const response = await getAllOrders(1, 100);
-      setOrders(response.data || []);
-    } catch (error) {
-      toast.error('Failed to load orders');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data || [];
+    },
+  });
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const handleStatusChange = async (orderId, newStatus) => {
-    try {
-      await updateOrderStatus(orderId, newStatus);
-      toast.success('Order status updated');
-      fetchOrders();
-    } catch (error) {
+  const statusMutation = useMutation({
+    mutationFn: ({ orderId, newStatus }) => updateOrderStatus(orderId, newStatus),
+    onMutate: async ({ orderId, newStatus }) => {
+      await queryClient.cancelQueries({ queryKey: ['adminOrders'] });
+      const previousOrders = queryClient.getQueryData(['adminOrders']);
+      
+      // Optimistically update the UI to instantly reflect the new status
+      queryClient.setQueryData(['adminOrders'], (old) => 
+        old?.map(order => order._id === orderId ? { ...order, orderStatus: newStatus } : order)
+      );
+      
+      return { previousOrders };
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['adminOrders'], context.previousOrders);
       toast.error('Failed to update status');
-    }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
+    },
+    onSuccess: () => toast.success('Order status updated'),
+  });
+
+  const handleStatusChange = (orderId, newStatus) => {
+    statusMutation.mutate({ orderId, newStatus });
   };
 
   return (
@@ -50,7 +58,7 @@ const ManageOrders = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {isLoading ? (
               <tr><td colSpan={6} className="p-8 text-center text-gray-500 text-sm">Loading orders...</td></tr>
             ) : orders.length === 0 ? (
               <tr><td colSpan={6} className="p-8 text-center text-gray-500 text-sm">No orders found.</td></tr>
@@ -64,10 +72,12 @@ const ManageOrders = () => {
                   <td className="p-4 text-xs text-gray-500">{dayjs(order.createdAt).format('MMM DD, YYYY')}</td>
                   <td className="p-4">
                     <select
-                      className="text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                      className="text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
                       value={order.orderStatus}
                       onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      disabled={statusMutation.isPending && statusMutation.variables?.orderId === order._id}
                     >
+                      <option value="placed">Placed</option>
                       <option value="pending">Pending</option>
                       <option value="processing">Processing</option>
                       <option value="shipped">Shipped</option>

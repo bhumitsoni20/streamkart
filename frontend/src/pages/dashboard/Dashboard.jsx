@@ -1,32 +1,23 @@
-import { useEffect, useState } from 'react';
-import { HiCube, HiCurrencyDollar, HiClock, HiBell } from 'react-icons/hi';
+import { useQuery } from '@tanstack/react-query';
+import { HiCube, HiCurrencyDollar, HiClock } from 'react-icons/hi';
 import useAuthStore from '../../store/authStore';
 import { getMyOrders } from '../../services/order.service';
 import StatsCard from '../../components/common/StatsCard';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import dayjs from 'dayjs';
 
 const Dashboard = () => {
   const { user } = useAuthStore();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await getMyOrders();
-        setOrders(response.data || []);
-      } catch (error) {
-        toast.error('Failed to load dashboard data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['myOrders'],
+    queryFn: async () => {
+      const response = await getMyOrders();
+      return response.data || [];
+    },
+  });
 
   const totalOrders = orders.length;
   const totalSpent = orders.reduce((sum, order) => sum + (order.amount || order.totalAmount || 0), 0);
@@ -52,9 +43,9 @@ const Dashboard = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <StatsCard icon={HiCube} label="Total Orders" value={loading ? '...' : totalOrders} color="blue" />
-        <StatsCard icon={HiCurrencyDollar} label="Total Spent" value={loading ? '...' : `₹${totalSpent.toLocaleString()}`} color="purple" />
-        <StatsCard icon={HiClock} label="Pending Orders" value={loading ? '...' : pendingOrders} color="orange" />
+        <StatsCard icon={HiCube} label="Total Orders" value={isLoading ? '...' : totalOrders} color="blue" />
+        <StatsCard icon={HiCurrencyDollar} label="Total Spent" value={isLoading ? '...' : `₹${totalSpent.toLocaleString()}`} color="purple" />
+        <StatsCard icon={HiClock} label="Pending Orders" value={isLoading ? '...' : pendingOrders} color="orange" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -73,8 +64,8 @@ const Dashboard = () => {
                 <th className="p-4">Amount</th>
               </tr></thead>
               <tbody>
-                {loading ? (
-                  <tr><td colSpan={4} className="p-8 text-center text-gray-500">Loading orders...</td></tr>
+                {isLoading ? (
+                  <tr><td colSpan={4} className="p-8 text-center text-gray-500 animate-pulse">Loading orders...</td></tr>
                 ) : orders.length === 0 ? (
                   <tr><td colSpan={4} className="p-8 text-center text-gray-500">No orders yet. Start shopping!</td></tr>
                 ) : (

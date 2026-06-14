@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getUsers, updateUserRole, deleteUser } from '../../services/admin.service';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -8,45 +9,55 @@ import toast from 'react-hot-toast';
 import dayjs from 'dayjs';
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [userToDelete, setUserToDelete] = useState(null);
 
-  const fetchUsers = async () => {
-    try {
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['adminUsers'],
+    queryFn: async () => {
       const response = await getUsers(1, 100);
-      setUsers(response.data || []);
-    } catch (error) {
-      toast.error('Failed to load users');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data || [];
+    },
+  });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const handleRoleChange = async (userId, newRole) => {
-    try {
-      await updateUserRole(userId, newRole);
+  const roleMutation = useMutation({
+    mutationFn: ({ userId, newRole }) => updateUserRole(userId, newRole),
+    onSuccess: () => {
       toast.success('User role updated');
-      fetchUsers();
-    } catch (error) {
-      toast.error('Failed to update role');
-    }
+      queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+    },
+    onError: () => toast.error('Failed to update role'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (userId) => deleteUser(userId),
+    onMutate: async (deletedUserId) => {
+      await queryClient.cancelQueries({ queryKey: ['adminUsers'] });
+      const previousUsers = queryClient.getQueryData(['adminUsers']);
+      
+      // Optimistically update the UI to instantly hide the deleted user
+      queryClient.setQueryData(['adminUsers'], (old) => old?.filter(u => u._id !== deletedUserId));
+      setUserToDelete(null);
+      
+      return { previousUsers };
+    },
+    onError: (err, deletedUserId, context) => {
+      queryClient.setQueryData(['adminUsers'], context.previousUsers);
+      toast.error(err.message || 'Failed to delete user');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+    },
+    onSuccess: () => toast.success('User deleted successfully'),
+  });
+
+  const handleRoleChange = (userId, newRole) => {
+    roleMutation.mutate({ userId, newRole });
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = () => {
     if (!userToDelete) return;
-    try {
-      await deleteUser(userToDelete._id);
-      toast.success('User deleted successfully');
-      setUserToDelete(null);
-      fetchUsers();
-    } catch (error) {
-      toast.error(error.message || 'Failed to delete user');
-    }
+    deleteMutation.mutate(userToDelete._id);
   };
 
   return (
@@ -64,7 +75,7 @@ const ManageUsers = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {isLoading ? (
               <tr><td colSpan={5} className="p-8 text-center text-gray-500 text-sm">Loading users...</td></tr>
             ) : users.length === 0 ? (
               <tr><td colSpan={5} className="p-8 text-center text-gray-500 text-sm">No users found.</td></tr>
@@ -81,9 +92,10 @@ const ManageUsers = () => {
                   <td className="p-4 text-gray-500 text-sm">{dayjs(user.createdAt).format('MMM DD, YYYY')}</td>
                   <td className="p-4 flex items-center gap-2">
                     <select
-                      className="text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                      className="text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
                       value={user.role}
                       onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                      disabled={roleMutation.isPending}
                     >
                       <option value="user">User</option>
                       <option value="seller">Seller</option>
@@ -92,8 +104,9 @@ const ManageUsers = () => {
                     {user.role !== 'admin' && (
                       <button 
                         onClick={() => setUserToDelete(user)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                         title="Delete User"
+                        disabled={deleteMutation.isPending}
                       >
                         <HiTrash className="w-5 h-5" />
                       </button>
@@ -117,7 +130,14 @@ const ManageUsers = () => {
           </p>
           <div className="flex gap-3 w-full">
             <Button variant="secondary" className="flex-1" onClick={() => setUserToDelete(null)}>Cancel</Button>
-            <Button variant="danger" className="flex-1 bg-red-600 hover:bg-red-700 focus:ring-red-500 border-transparent text-white" onClick={confirmDelete}>Delete User</Button>
+            <Button 
+              variant="danger" 
+              className="flex-1 bg-red-600 hover:bg-red-700 focus:ring-red-500 border-transparent text-white" 
+              onClick={confirmDelete}
+              isLoading={deleteMutation.isPending}
+            >
+              Delete User
+            </Button>
           </div>
         </div>
       </Modal>
