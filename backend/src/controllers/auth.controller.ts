@@ -11,9 +11,19 @@ export const register = async (req: AuthRequest, res: Response) => {
     const { name, email, phone } = req.body;
     const firebaseUser = req.firebaseUser;
 
-    let user = await User.findOne({ firebaseUid: firebaseUser.uid });
+    let user = await User.findOne({ 
+      $or: [
+        { firebaseUid: firebaseUser.uid },
+        { email: email || firebaseUser.email }
+      ]
+    });
 
     if (user) {
+      // If found by email but UID changed (e.g. Firebase project migration), update UID
+      if (user.firebaseUid !== firebaseUser.uid) {
+        user.firebaseUid = firebaseUser.uid;
+        await user.save();
+      }
       return sendSuccess(res, user, 'User already exists. Logged in.');
     }
 
@@ -95,7 +105,15 @@ export const sendVerificationEmail = async (req: AuthRequest, res: Response) => 
   try {
     const user = req.user;
     if (!user) return sendError(res, 'User not found.', 404);
-    if (user.isVerified) return sendError(res, 'Email already verified.', 400);
+    
+    // Use Firebase as the source of truth for verification status
+    if (req.firebaseUser && req.firebaseUser.email_verified) {
+      if (!user.isVerified) {
+        user.isVerified = true;
+        await user.save();
+      }
+      return sendError(res, 'Email already verified.', 400);
+    }
 
     const success = await sendCustomVerificationEmail(user.email, user.name);
     if (success) {

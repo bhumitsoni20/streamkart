@@ -17,7 +17,11 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (password.length < 6) { toast.error('Password must be at least 6 characters'); return; }
+    const strongPasswordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|`~-]).{8,}$/;
+    if (!strongPasswordRegex.test(password)) {
+      toast.error('Password must be at least 8 characters long and contain an uppercase letter, a number, and a special character.');
+      return;
+    }
     setLoading(true);
     try {
       await signUpWithEmail(email, password, name);
@@ -41,7 +45,7 @@ const Register = () => {
       <form onSubmit={handleRegister} className="space-y-4">
         <Input label="Full Name" icon={HiUser} placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
         <Input label="Email" type="email" icon={HiMail} placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <Input label="Password" type="password" icon={HiLockClosed} placeholder="Min. 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <Input label="Password" type="password" icon={HiLockClosed} placeholder="Min. 8 chars, 1 uppercase, 1 number, 1 symbol" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <Button type="submit" className="w-full" size="lg" loading={loading}>Create Account <span className="ml-1">→</span></Button>
       </form>
       <div className="relative my-6">

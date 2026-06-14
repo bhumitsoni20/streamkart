@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HiMenu, HiX, HiShoppingCart, HiBell, HiSearch } from 'react-icons/hi';
+import { HiMenu, HiX, HiShoppingCart, HiBell, HiSearch, HiPlay } from 'react-icons/hi';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
 import { signOut } from '../../firebase/auth';

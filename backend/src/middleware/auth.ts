@@ -23,7 +23,17 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     const decodedToken = await firebaseAuth.verifyIdToken(token);
     req.firebaseUser = decodedToken;
 
-    let user = await User.findOne({ firebaseUid: decodedToken.uid });
+    let user = await User.findOne({
+      $or: [
+        { firebaseUid: decodedToken.uid },
+        { email: decodedToken.email }
+      ]
+    });
+
+    if (user && user.firebaseUid !== decodedToken.uid) {
+      user.firebaseUid = decodedToken.uid;
+      await user.save();
+    }
 
     if (!user) {
       // Auto-create user on first login
