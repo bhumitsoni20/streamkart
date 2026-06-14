@@ -33,7 +33,7 @@ const Dashboard = lazy(() => import('../pages/dashboard/Dashboard'));
 const Orders = lazy(() => import('../pages/dashboard/Orders'));
 const OrderDetail = lazy(() => import('../pages/dashboard/OrderDetail'));
 const Profile = lazy(() => import('../pages/dashboard/Profile'));
-const Notifications = lazy(() => import('../pages/dashboard/Notifications'));
+const Notifications = lazy(() => import('../pages/marketplace/Notifications'));
 const SellerApplication = lazy(() => import('../pages/dashboard/SellerApplication'));
 
 // Seller Pages (Lazy Loaded)
@@ -67,6 +67,7 @@ const router = createBrowserRouter([
       { path: 'products/:id', element: withSuspense(ProductDetail) },
       { path: 'cart', element: withSuspense(Cart) },
       { path: 'wishlist', element: withSuspense(Wishlist) },
+      { path: 'notifications', element: <ProtectedRoute>{withSuspense(Notifications)}</ProtectedRoute> },
       { path: 'search', element: withSuspense(Search) },
       { path: 'checkout', element: withSuspense(Checkout) },
       { path: 'about', element: withSuspense(About) },
@@ -98,7 +99,6 @@ const router = createBrowserRouter([
       { path: 'orders', element: withSuspense(Orders) },
       { path: 'orders/:id', element: withSuspense(OrderDetail) },
       { path: 'profile', element: withSuspense(Profile) },
-      { path: 'notifications', element: withSuspense(Notifications) },
       { path: 'apply-seller', element: withSuspense(SellerApplication) },
     ],
   },

@@ -11,7 +11,6 @@ const Sidebar = () => {
   const userLinks = [
     { to: '/dashboard', icon: HiHome, label: 'Dashboard', end: true },
     { to: '/dashboard/orders', icon: HiClipboardList, label: 'My Orders' },
-    { to: '/dashboard/notifications', icon: HiBell, label: 'Notifications' },
     { to: '/dashboard/profile', icon: HiUser, label: 'Profile' },
   ];
 
