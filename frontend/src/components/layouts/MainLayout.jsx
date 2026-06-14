@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
+import GlobalLoginPrompt from '../common/GlobalLoginPrompt';
 
 const MainLayout = () => {
   return (
@@ -10,6 +11,7 @@ const MainLayout = () => {
         <Outlet />
       </main>
       <Footer />
+      <GlobalLoginPrompt />
     </div>
   );
 };
