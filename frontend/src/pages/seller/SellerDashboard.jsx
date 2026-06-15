@@ -3,6 +3,7 @@ import { HiShoppingBag, HiUsers, HiStar, HiExclamation, HiPlus, HiPencil, HiDots
 import useAuthStore from '../../store/authStore';
 import { getSellerProducts } from '../../services/product.service';
 import { getSellerOrders } from '../../services/order.service';
+import { getNotifications } from '../../services/notification.service';
 import StatsCard from '../../components/common/StatsCard';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
@@ -14,17 +15,20 @@ const SellerDashboard = () => {
   const { user } = useAuthStore();
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [prodRes, orderRes] = await Promise.all([
+        const [prodRes, orderRes, notifRes] = await Promise.all([
           getSellerProducts('limit=10'),
-          getSellerOrders()
+          getSellerOrders(),
+          getNotifications('limit=5')
         ]);
         setProducts(prodRes.data || []);
         setOrders(orderRes.data || []);
+        setNotifications(notifRes.data || []);
       } catch (error) {
         toast.error('Failed to load dashboard data');
       } finally {
@@ -93,19 +97,30 @@ const SellerDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Notifications (MOCK) */}
+        {/* Notifications */}
         <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Notifications</h3>
+            <Link to="/notifications"><Button variant="ghost" size="sm">View All</Button></Link>
           </div>
           <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-purple-50">📦</div>
-              <div>
-                <p className="text-gray-900 font-medium text-sm">Welcome to Streamkart!</p>
-                <p className="text-gray-500 text-sm">Start listing your digital products today.</p>
-              </div>
-            </div>
+            {loading ? (
+              <p className="text-gray-500 text-sm text-center py-4">Loading...</p>
+            ) : notifications.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-4">No recent notifications</p>
+            ) : (
+              notifications.map((notif) => (
+                <div key={notif._id} className="flex items-start gap-3">
+                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 ${!notif.read ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-50'}`}>
+                    {notif.type === 'order' ? '📦' : notif.type === 'review' ? '⭐' : '📣'}
+                  </div>
+                  <div>
+                    <p className={`text-sm ${!notif.read ? 'text-gray-900 font-bold' : 'text-gray-700 font-medium'}`}>{notif.title}</p>
+                    <p className="text-gray-500 text-sm">{notif.message}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
