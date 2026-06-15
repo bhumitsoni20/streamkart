@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { HiMenu, HiX, HiShoppingCart, HiBell, HiSearch, HiPlay } from 'react-icons/hi';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
+import { apiGet } from '../../services/api';
 import { signOut } from '../../firebase/auth';
 import Avatar from '../ui/Avatar';
 import Button from '../ui/Button';
@@ -10,6 +11,7 @@ import Button from '../ui/Button';
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
   const { user, isAuthenticated } = useAuthStore();
   const itemCount = useCartStore((s) => s.items.length);
@@ -28,6 +30,24 @@ const Navbar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [profileOpen]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchUnreadCount = async () => {
+        try {
+          const res = await apiGet('/notifications/unread-count');
+          setUnreadCount(res.data?.count || 0);
+        } catch (error) {
+          console.error('Failed to fetch unread count', error);
+        }
+      };
+      fetchUnreadCount();
+      
+      // Optional: poll every minute for new notifications
+      const interval = setInterval(fetchUnreadCount, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     await signOut();
@@ -81,6 +101,9 @@ const Navbar = () => {
                 </Link>
                 <Link to="/notifications" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <HiBell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
+                  )}
                 </Link>
                 <Link to="/cart" className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <HiShoppingCart className="w-5 h-5" />

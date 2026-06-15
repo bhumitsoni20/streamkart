@@ -6,6 +6,9 @@ export interface IUser extends Document {
   phone?: string;
   firebaseUid: string;
   role: 'user' | 'seller' | 'admin';
+  sellerStatus: 'none' | 'pending' | 'approved' | 'rejected';
+  applicationSubmittedAt?: Date;
+  approvedAt?: Date;
   avatar?: string;
   isVerified: boolean;
   fcmToken?: string;
@@ -41,6 +44,17 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ['user', 'seller', 'admin'],
       default: 'user',
+    },
+    sellerStatus: {
+      type: String,
+      enum: ['none', 'pending', 'approved', 'rejected'],
+      default: 'none',
+    },
+    applicationSubmittedAt: {
+      type: Date,
+    },
+    approvedAt: {
+      type: Date,
     },
     avatar: {
       type: String,

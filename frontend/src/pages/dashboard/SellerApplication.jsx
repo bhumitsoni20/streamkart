@@ -14,7 +14,6 @@ const SellerApplication = () => {
     fullName: '',
     email: '',
     phone: '',
-    businessName: '',
     description: '',
     additionalInfo: ''
   });
@@ -101,9 +100,8 @@ const SellerApplication = () => {
           <Input label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} required />
           <Input label="Email Address" type="email" name="email" value={formData.email} onChange={handleChange} required />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5">
           <Input label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} required />
-          <Input label="Business / Store Name" name="businessName" value={formData.businessName} onChange={handleChange} required />
         </div>
         
         <div>

@@ -1,5 +1,5 @@
-const typeIcons = { order: '📦', payment: '💳', system: '🔐', promotion: '⭐' };
-const typeColors = { order: 'bg-purple-100', payment: 'bg-green-100', system: 'bg-blue-100', promotion: 'bg-amber-100' };
+const typeIcons = { order: '📦', payment: '💳', system: '🔐', promotion: '⭐', application: '📄' };
+const typeColors = { order: 'bg-purple-100', payment: 'bg-green-100', system: 'bg-blue-100', promotion: 'bg-amber-100', application: 'bg-indigo-100' };
 
 const NotificationCard = ({ notification, onMarkRead }) => {
   return (

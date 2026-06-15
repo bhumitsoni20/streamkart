@@ -1,9 +1,15 @@
 import { getIdToken } from '../firebase/auth';
+import useAuthStore from '../store/authStore';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = async (endpoint, options = {}) => {
-  const token = await getIdToken();
+  let token = await getIdToken();
+  
+  if (!token) {
+    // Fallback to persisted token if Firebase auth hasn't initialized yet
+    token = useAuthStore.getState().token;
+  }
 
   const config = {
     headers: {

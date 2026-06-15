@@ -35,6 +35,7 @@ const OrderDetail = lazy(() => import('../pages/dashboard/OrderDetail'));
 const Profile = lazy(() => import('../pages/dashboard/Profile'));
 const Notifications = lazy(() => import('../pages/marketplace/Notifications'));
 const SellerApplication = lazy(() => import('../pages/dashboard/SellerApplication'));
+const SellerReview = lazy(() => import('../pages/dashboard/SellerReview'));
 
 // Seller Pages (Lazy Loaded)
 const SellerDashboard = lazy(() => import('../pages/seller/SellerDashboard'));
@@ -100,6 +101,7 @@ const router = createBrowserRouter([
       { path: 'orders/:id', element: withSuspense(OrderDetail) },
       { path: 'profile', element: withSuspense(Profile) },
       { path: 'apply-seller', element: withSuspense(SellerApplication) },
+      { path: 'seller-review', element: withSuspense(SellerReview) },
     ],
   },
   {

@@ -5,7 +5,6 @@ export interface ISellerApplication extends Document {
   fullName: string;
   email: string;
   phone: string;
-  businessName: string;
   description: string;
   additionalInfo?: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -31,11 +30,6 @@ const sellerApplicationSchema = new Schema<ISellerApplication>(
       trim: true,
     },
     phone: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    businessName: {
       type: String,
       required: true,
       trim: true,

@@ -1,6 +1,8 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { SellerApplication } from '../models/SellerApplication';
+import { User } from '../models/User';
+import { Notification } from '../models/Notification';
 import { sendSuccess, sendError } from '../utils/response';
 
 // POST /api/seller/application
@@ -18,18 +20,34 @@ export const applySeller = async (req: AuthRequest, res: Response) => {
       return sendError(res, 'You already have a pending or approved application.', 400);
     }
 
-    const { fullName, email, phone, businessName, description, additionalInfo } = req.body;
+    const { fullName, email, phone, description, additionalInfo } = req.body;
 
     const application = await SellerApplication.create({
       user: user._id,
       fullName,
       email,
       phone,
-      businessName,
       description,
       additionalInfo,
       status: 'pending',
     });
+
+    await User.findByIdAndUpdate(user._id, {
+      sellerStatus: 'pending',
+      applicationSubmittedAt: new Date(),
+    });
+
+    const admins = await User.find({ role: 'admin' });
+    if (admins.length > 0) {
+      const notifications = admins.map((admin) => ({
+        user: admin._id,
+        title: 'New Seller Application',
+        message: `${fullName} has applied to become a seller.`,
+        type: 'application',
+        actionUrl: '/admin/applications',
+      }));
+      await Notification.insertMany(notifications);
+    }
 
     return sendSuccess(res, application, 'Application submitted successfully.', 201);
   } catch (error: any) {

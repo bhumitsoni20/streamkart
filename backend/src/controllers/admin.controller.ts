@@ -206,7 +206,15 @@ export const updateApplicationStatus = async (req: AuthRequest, res: Response) =
     if (!application) return sendError(res, 'Application not found.', 404);
 
     if (status === 'approved') {
-      await User.findByIdAndUpdate(application.user, { role: 'seller' });
+      await User.findByIdAndUpdate(application.user, { 
+        role: 'seller',
+        sellerStatus: 'approved',
+        approvedAt: new Date()
+      });
+    } else if (status === 'rejected') {
+      await User.findByIdAndUpdate(application.user, {
+        sellerStatus: 'rejected'
+      });
     }
 
     return sendSuccess(res, application, `Application ${status}.`);

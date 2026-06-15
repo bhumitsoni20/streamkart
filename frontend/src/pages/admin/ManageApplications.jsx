@@ -51,7 +51,6 @@ const ManageApplications = () => {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 <th className="p-4">Applicant</th>
-                <th className="p-4">Business</th>
                 <th className="p-4">Description</th>
                 <th className="p-4">Status</th>
                 <th className="p-4 text-right">Actions</th>
@@ -69,9 +68,6 @@ const ManageApplications = () => {
                       <p className="text-gray-900 font-medium text-sm">{app.fullName}</p>
                       <p className="text-gray-400 text-xs">{app.email}</p>
                       <p className="text-gray-400 text-xs">{app.phone}</p>
-                    </td>
-                    <td className="p-4">
-                      <p className="text-gray-900 font-medium text-sm">{app.businessName}</p>
                     </td>
                     <td className="p-4 max-w-xs">
                       <p className="text-gray-600 text-sm truncate" title={app.description}>{app.description}</p>
