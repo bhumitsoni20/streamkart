@@ -44,6 +44,16 @@ export const getProduct = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.id).populate('seller', 'name avatar email').lean();
     if (!product) return sendError(res, 'Product not found.', 404);
+
+    if (product.seller) {
+      const vendorStats = await Product.aggregate([
+        { $match: { seller: (product.seller as any)._id } },
+        { $group: { _id: null, totalSales: { $sum: '$totalSales' }, avgRating: { $avg: '$ratings' } } }
+      ]);
+      (product.seller as any).totalSales = vendorStats[0]?.totalSales || 0;
+      (product.seller as any).ratings = vendorStats[0]?.avgRating || 0;
+    }
+
     return sendSuccess(res, product);
   } catch (error: any) {
     return sendError(res, error.message);

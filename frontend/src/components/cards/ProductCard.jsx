@@ -49,10 +49,12 @@ const ProductCard = ({ product }) => {
             <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
             <span className="text-sm text-gray-400">/mo</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-amber-400">★</span>
-            <span className="text-sm font-medium text-gray-600">{(product.ratings || 4.9).toFixed(1)}</span>
-          </div>
+          {product.totalSales > 0 && (
+            <div className="flex items-center gap-1">
+              <span className="text-amber-400">★</span>
+              <span className="text-sm font-medium text-gray-600">{(product.ratings || 0).toFixed(1)}</span>
+            </div>
+          )}
         </div>
 
         <Button size="sm" className="w-full" onClick={() => addToCart(product)}>

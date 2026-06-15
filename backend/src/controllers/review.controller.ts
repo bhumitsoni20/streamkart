@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { Review } from '../models/Review';
 import { Product } from '../models/Product';
+import { Order } from '../models/Order';
 import { sendSuccess, sendError, sendPaginated } from '../utils/response';
 
 // POST /api/reviews
@@ -54,6 +55,36 @@ export const getProductReviews = async (req: AuthRequest, res: Response) => {
     ]);
 
     return sendPaginated(res, reviews, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// GET /api/reviews/eligibility/:productId
+export const checkEligibility = async (req: AuthRequest, res: Response) => {
+  try {
+    const { productId } = req.params;
+
+    const order = await Order.findOne({
+      user: req.user._id,
+      product: productId,
+      paymentStatus: 'paid'
+    });
+
+    if (!order) {
+      return sendSuccess(res, { canReview: false, reason: 'purchase_required' });
+    }
+
+    const existingReview = await Review.exists({
+      user: req.user._id,
+      product: productId,
+    });
+
+    if (existingReview) {
+      return sendSuccess(res, { canReview: false, reason: 'already_reviewed' });
+    }
+
+    return sendSuccess(res, { canReview: true });
   } catch (error: any) {
     return sendError(res, error.message);
   }

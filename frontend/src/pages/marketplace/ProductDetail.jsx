@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProduct } from '../../hooks/useProducts';
 import useCart from '../../hooks/useCart';
 import useWishlistStore from '../../store/wishlistStore';
+import useAuthStore from '../../store/authStore';
+import { apiGet, apiPost } from '../../services/api';
 import Rating from '../../components/ui/Rating';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
 import ReviewCard from '../../components/cards/ReviewCard';
 import Avatar from '../../components/ui/Avatar';
-import { HiShieldCheck, HiCheckCircle, HiHeart, HiOutlineHeart } from 'react-icons/hi';
+import { HiShieldCheck, HiCheckCircle, HiHeart, HiOutlineHeart, HiStar } from 'react-icons/hi';
+import toast from 'react-hot-toast';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -17,12 +20,70 @@ const ProductDetail = () => {
   const { data, isLoading } = useProduct(id);
   const { addToCart } = useCart();
   const { toggleItem, isInWishlist } = useWishlistStore();
+  const { user, isAuthenticated } = useAuthStore();
+  
   const [billing, setBilling] = useState('monthly');
+  const [reviews, setReviews] = useState([]);
+  const [canReview, setCanReview] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-  if (isLoading) return <div className="flex justify-center py-32"><Spinner size="lg" /></div>;
   const product = data?.data;
   const liked = product ? isInWishlist(product._id) : false;
 
+  useEffect(() => {
+    if (product?._id) {
+      fetchReviews();
+      if (isAuthenticated) {
+        checkReviewEligibility();
+      }
+    }
+  }, [product?._id, isAuthenticated]);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await apiGet(`/reviews/product/${product._id}?limit=20`);
+      setReviews(res.data || []);
+    } catch (error) {
+      console.error('Failed to load reviews', error);
+    }
+  };
+
+  const checkReviewEligibility = async () => {
+    try {
+      const res = await apiGet(`/reviews/eligibility/${product._id}`);
+      setCanReview(res.data?.canReview || false);
+    } catch (error) {
+      console.error('Failed to check eligibility', error);
+    }
+  };
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!reviewForm.rating || !reviewForm.comment.trim()) return;
+    
+    setIsSubmittingReview(true);
+    try {
+      const res = await apiPost('/reviews', {
+        productId: product._id,
+        rating: reviewForm.rating,
+        comment: reviewForm.comment
+      });
+      toast.success('Review submitted successfully!');
+      
+      // Add the new review locally
+      const newReview = { ...res.data, user: { name: user.name, avatar: user.avatar } };
+      setReviews([newReview, ...reviews]);
+      setCanReview(false);
+      setReviewForm({ rating: 5, comment: '' });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to submit review');
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
+  if (isLoading) return <div className="flex justify-center py-32"><Spinner size="lg" /></div>;
   if (!product) return <div className="text-center py-32 text-gray-500">Product not found</div>;
 
   return (
@@ -118,7 +179,6 @@ const ProductDetail = () => {
                 {liked ? <HiHeart className="w-5 h-5 text-pink-500" /> : <HiOutlineHeart className="w-5 h-5" />}
                 {liked ? 'Added to Wishlist' : 'Save to Wishlist'}
               </Button>
-              <p className="text-sm text-gray-400">No credit card required for trial</p>
             </div>
 
             {/* Seller Info inline */}
@@ -132,11 +192,11 @@ const ProductDetail = () => {
               </div>
               <div className="flex gap-6 text-center">
                 <div>
-                  <p className="text-gray-900 font-extrabold text-lg">{product.totalSales || '50k'}+</p>
+                  <p className="text-gray-900 font-extrabold text-lg">{product.seller?.totalSales || 0}</p>
                   <p className="text-gray-500 text-xs font-semibold tracking-wider">SALES</p>
                 </div>
                 <div>
-                  <p className="text-gray-900 font-extrabold text-lg">{(product.ratings || 4.9).toFixed(1)}</p>
+                  <p className="text-gray-900 font-extrabold text-lg">{(product.seller?.ratings || 0).toFixed(1)}</p>
                   <p className="text-gray-500 text-xs font-semibold tracking-wider">RATING</p>
                 </div>
               </div>
@@ -154,20 +214,58 @@ const ProductDetail = () => {
           </div>
           <div className="text-left sm:text-right">
             <div className="flex items-center gap-2 sm:justify-end mb-1">
-              <Rating value={product.ratings || 4.8} />
-              <span className="text-2xl font-bold text-gray-900">{(product.ratings || 4.8).toFixed(1)}</span>
+              <Rating value={product.ratings || 0} />
+              <span className="text-2xl font-bold text-gray-900">{(product.ratings || 0).toFixed(1)}</span>
             </div>
-            <span className="text-sm text-gray-500">Based on {product.totalReviews || 128} reviews</span>
+            <span className="text-sm text-gray-500">Based on {product.totalReviews || 0} reviews</span>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ReviewCard review={{ user: { name: 'Julianne Davis' }, rating: 5, comment: 'This service has transformed our workflow. Worth every penny.', createdAt: new Date() }} />
-          <ReviewCard review={{ user: { name: 'Marcus Rodriguez' }, rating: 4, comment: 'Great integration capabilities. Seamless experience overall.', createdAt: new Date() }} />
-        </div>
-        <div className="mt-8 text-center">
-          <Button variant="secondary">Load More Reviews</Button>
-        </div>
+        {canReview && (
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 mb-8">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Write a Review</h3>
+            <form onSubmit={submitReview} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <HiStar
+                      key={star}
+                      className={`w-8 h-8 cursor-pointer transition-colors ${reviewForm.rating >= star ? 'text-amber-400' : 'text-gray-300'}`}
+                      onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                <textarea
+                  required
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  placeholder="What did you like or dislike about this product?"
+                  value={reviewForm.comment}
+                  onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                />
+              </div>
+              <div className="text-right">
+                <Button type="submit" disabled={isSubmittingReview}>
+                  {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {reviews.length === 0 ? (
+          <p className="text-center text-gray-500 py-8">No reviews yet. Be the first to review this product!</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {reviews.map((r) => (
+              <ReviewCard key={r._id} review={r} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
