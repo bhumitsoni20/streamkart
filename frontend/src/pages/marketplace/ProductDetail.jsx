@@ -22,7 +22,6 @@ const ProductDetail = () => {
   const { toggleItem, isInWishlist } = useWishlistStore();
   const { user, isAuthenticated } = useAuthStore();
   
-  const [billing, setBilling] = useState('monthly');
   const [reviews, setReviews] = useState([]);
   const [canReview, setCanReview] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
@@ -140,16 +139,8 @@ const ProductDetail = () => {
               <span className="text-indigo-600 text-sm font-medium">Save 20%</span>
             </div>
             
-            <div className="flex items-baseline gap-1 mb-2">
+            <div className="flex items-baseline gap-1 mb-8">
               <span className="text-5xl font-bold text-gray-900">₹{product.price}</span>
-              <span className="text-gray-500 text-base">/month</span>
-            </div>
-            <p className="text-sm text-gray-400 mb-8">Billed annually</p>
-
-            {/* Billing toggle */}
-            <div className="flex bg-gray-100 rounded-xl p-1 mb-8 max-w-sm">
-              <button onClick={() => setBilling('monthly')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${billing === 'monthly' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>Monthly</button>
-              <button onClick={() => setBilling('yearly')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${billing === 'yearly' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}>Yearly</button>
             </div>
 
             {/* High level benefits */}
