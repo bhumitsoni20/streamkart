@@ -47,7 +47,16 @@ const SellerProducts = () => {
             <tbody className="divide-y divide-gray-100">
               {products.map(product => (
                 <tr key={product._id} className="hover:bg-gray-50/50">
-                  <td className="p-4 text-sm font-medium text-gray-900">{product.title}</td>
+                  <td className="p-4 text-sm font-medium text-gray-900">
+                    <div className="flex items-center gap-3">
+                      {product.logo ? (
+                        <img src={product.logo} alt={product.title} className="w-10 h-10 rounded-lg object-cover border border-gray-200 bg-white" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100">{product.title.charAt(0)}</div>
+                      )}
+                      <span>{product.title}</span>
+                    </div>
+                  </td>
                   <td className="p-4 text-sm text-gray-500">{product.category}</td>
                   <td className="p-4 text-sm text-gray-900">₹{product.price}</td>
                   <td className="p-4 text-sm">
