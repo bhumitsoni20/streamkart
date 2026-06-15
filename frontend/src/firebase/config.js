@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getMessaging, isSupported } from 'firebase/messaging';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -13,16 +14,18 @@ const firebaseConfig = {
 
 let app = null;
 let auth = null;
+let storage = null;
 
 try {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
+  storage = getStorage(app);
 } catch (error) {
   console.warn('Firebase initialization failed:', error.message);
   console.warn('Auth features will be unavailable. Please check your .env configuration.');
 }
 
-export { auth };
+export { auth, storage };
 
 // Messaging (only in supported browsers)
 export const getFirebaseMessaging = async () => {
