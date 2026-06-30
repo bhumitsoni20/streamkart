@@ -63,13 +63,10 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-gray-900 hover:opacity-90 transition-opacity">
-            <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-              <HiPlay className="w-5 h-5 ml-0.5" />
-            </div>
-            <span className="text-indigo-600">Stream</span>kart
+          <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
+            <img src="/streamkart_logo.png" alt="StreamKart" className="h-16 scale-[1.35] w-auto object-contain origin-left ml-4" />
           </Link>
 
           {/* Desktop Nav */}

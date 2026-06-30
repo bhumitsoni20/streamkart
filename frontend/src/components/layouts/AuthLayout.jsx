@@ -1,9 +1,11 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useOutlet, Link, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { getPublicStats } from '../../services/public.service';
 
 const AuthLayout = () => {
   const location = useLocation();
+  const outlet = useOutlet();
   const isLogin = location.pathname === '/login' || location.pathname === '/phone-login' || location.pathname === '/forgot-password';
 
   const { data: stats } = useQuery({
@@ -86,9 +88,19 @@ const AuthLayout = () => {
         </div>
 
         {/* Form */}
-        <div className="flex-1 flex items-center justify-center px-6 pb-20">
-          <div className="w-full max-w-md animate-fadeIn">
-            <Outlet />
+        <div className="flex-1 flex items-center justify-center px-6 pb-20 overflow-x-hidden">
+          <div className="w-full max-w-md">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              >
+                {outlet}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 

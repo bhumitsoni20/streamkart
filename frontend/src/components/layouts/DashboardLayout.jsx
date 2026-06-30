@@ -1,15 +1,29 @@
-import { Outlet } from 'react-router-dom';
+import { useOutlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from '../common/Navbar';
 import Sidebar from '../common/Sidebar';
 
 const DashboardLayout = () => {
+  const location = useLocation();
+  const outlet = useOutlet();
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <Sidebar />
-      <main className="pt-16 lg:pl-60 min-h-screen">
-        <div className="p-6 lg:p-8 animate-fadeIn">
-          <Outlet />
+      <main className="pt-20 lg:pl-60 min-h-screen overflow-x-hidden">
+        <div className="p-6 lg:p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              {outlet}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>
