@@ -42,3 +42,31 @@ export const useMarkAllAsRead = () => {
     },
   });
 };
+
+export const useNotificationSettings = () => {
+  const token = useAuthStore((state) => state.token);
+  return useQuery({
+    queryKey: ['notificationSettings'],
+    queryFn: async () => {
+      const res = await notificationService.getNotificationSettings();
+      return res.data;
+    },
+    enabled: !!token,
+  });
+};
+
+export const useUpdateNotificationSettings = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (settings) => notificationService.updateNotificationSettings(settings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notificationSettings'] });
+    },
+  });
+};
+
+export const useSendTestNotification = () => {
+  return useMutation({
+    mutationFn: notificationService.sendTestNotification,
+  });
+};

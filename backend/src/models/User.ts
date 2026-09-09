@@ -19,6 +19,13 @@ export interface IUser extends Document {
   walletBalance: number;
   upiId?: string;
   upiQrCode?: string;
+  notificationPreferences?: {
+    pushEnabled: boolean;
+    orderUpdates: boolean;
+    chatMessages: boolean;
+    paymentUpdates: boolean;
+    accountAlerts: boolean;
+  };
   updatedAt: Date;
 }
 
@@ -96,6 +103,13 @@ const userSchema = new Schema<IUser>(
     upiQrCode: {
       type: String,
       default: '',
+    },
+    notificationPreferences: {
+      pushEnabled: { type: Boolean, default: true },
+      orderUpdates: { type: Boolean, default: true },
+      chatMessages: { type: Boolean, default: true },
+      paymentUpdates: { type: Boolean, default: true },
+      accountAlerts: { type: Boolean, default: true },
     },
   },
   {

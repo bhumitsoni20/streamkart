@@ -6,6 +6,7 @@ import Avatar from '../../components/ui/Avatar';
 import toast from 'react-hot-toast';
 import { apiPut } from '../../services/api';
 import ImageCropperModal from '../../components/ui/ImageCropperModal';
+import NotificationSettingsCard from '../../components/common/NotificationSettingsCard';
 
 const Profile = () => {
   const { user, setUser } = useAuthStore();
@@ -125,6 +126,11 @@ const Profile = () => {
           onCancel={() => setImageSrc(null)}
         />
       )}
+
+      {/* Push & Category Notification Preferences */}
+      <div className="mt-8 max-w-2xl">
+        <NotificationSettingsCard />
+      </div>
 
       {/* Seller Account Upgrade */}
       {user?.role === 'user' && (

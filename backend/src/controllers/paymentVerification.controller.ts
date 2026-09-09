@@ -192,15 +192,26 @@ export const approvePayment = async (req: AuthRequest, res: Response) => {
         orderDoc.seller.toString(),
         'Payment Received!',
         `Payment of ₹${orderDoc.amount} verified for ${orderDoc.product ? (orderDoc.product as any).title : 'Product'}.`,
-        'payment'
+        'payment',
+        `/dashboard/chats/${orderDoc._id}`,
+        {
+          type: 'PAYMENT_RECEIVED',
+          orderId: orderDoc._id.toString(),
+          eventKey: `PAYMENT_RECEIVED_${orderDoc._id}`,
+        }
       ).catch((e) => logger.error('Push error:', e));
 
       sendPushNotification(
         orderDoc.user.toString(),
-        'Payment verification completed',
-        `Your payment for ${orderDoc.product ? (orderDoc.product as any).title : 'Product'} has been verified successfully. Click to go to chat.`,
+        'Payment Approved',
+        'Your payment has been verified. You can now continue to your order.',
         'order',
-        `/dashboard/chats/${orderDoc._id}`
+        `/dashboard/chats/${orderDoc._id}`,
+        {
+          type: 'PAYMENT_APPROVED',
+          orderId: orderDoc._id.toString(),
+          eventKey: `PAYMENT_APPROVED_${orderDoc._id}`,
+        }
       ).catch((e) => logger.error('Push error:', e));
     } else if (bundleOrderDoc) {
       bundleOrderDoc.paymentStatus = 'payment_verified';
@@ -273,15 +284,26 @@ export const approvePayment = async (req: AuthRequest, res: Response) => {
         bundleOrderDoc.seller.toString(),
         'Bundle Payment Received!',
         `Payment of ₹${bundleOrderDoc.amount} verified for ${bundleOrderDoc.bundle ? (bundleOrderDoc.bundle as any).title : 'Bundle'}.`,
-        'payment'
+        'payment',
+        `/dashboard/chats/${bundleOrderDoc._id}`,
+        {
+          type: 'PAYMENT_RECEIVED',
+          orderId: bundleOrderDoc._id.toString(),
+          eventKey: `BUNDLE_PAYMENT_RECEIVED_${bundleOrderDoc._id}`,
+        }
       ).catch((e) => logger.error('Push error:', e));
 
       sendPushNotification(
         bundleOrderDoc.user.toString(),
-        'Payment verification completed',
-        `Your payment for ${bundleOrderDoc.bundle ? (bundleOrderDoc.bundle as any).title : 'Bundle'} has been verified successfully. Click to go to chat.`,
+        'Payment Approved',
+        'Your payment has been verified. You can now continue to your order.',
         'order',
-        `/dashboard/chats/${bundleOrderDoc._id}`
+        `/dashboard/chats/${bundleOrderDoc._id}`,
+        {
+          type: 'PAYMENT_APPROVED',
+          orderId: bundleOrderDoc._id.toString(),
+          eventKey: `BUNDLE_PAYMENT_APPROVED_${bundleOrderDoc._id}`,
+        }
       ).catch((e) => logger.error('Push error:', e));
     }
 
@@ -364,10 +386,15 @@ export const rejectPayment = async (req: AuthRequest, res: Response) => {
 
     sendPushNotification(
       verification.buyer.toString(),
-      'Payment verification failed',
-      `Your payment for ${productName} could not be verified. Reason: ${rejectionReason}`,
+      'Payment Verification Failed',
+      `Your payment verification was rejected. Reason: ${rejectionReason}`,
       'order',
-      `/checkout`
+      `/checkout`,
+      {
+        type: 'PAYMENT_REJECTED',
+        orderId: verification.orderId?.toString() || '',
+        eventKey: `PAYMENT_REJECTED_${verification._id}`,
+      }
     ).catch((e) => logger.error('Push error:', e));
 
     Cache.invalidatePrefix('admin_verifications_');

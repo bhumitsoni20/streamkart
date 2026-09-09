@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { AuthRequest } from '../middleware/auth';
 import { Order } from '../models/Order';
 import { Message } from '../models/Message';
-import { sendPushNotification } from '../services/notification.service';
+import { sendPushNotification, sendPushToAdmins } from '../services/notification.service';
 import { Coupon } from '../models/Coupon';
 import { CouponRedemption } from '../models/CouponRedemption';
 import { BundleOrder } from '../models/BundleOrder';
@@ -170,6 +170,18 @@ export const submitPaymentProof = async (req: AuthRequest, res: Response) => {
 
         order.paymentStatus = 'pending_verification';
         await order.save();
+
+        sendPushToAdmins(
+          'Payment Verification Required',
+          'A new payment is waiting for verification.',
+          'payment',
+          '/admin/payments',
+          {
+            type: 'PAYMENT_VERIFICATION',
+            orderId: order._id.toString(),
+            eventKey: `PAYMENT_VERIFICATION_${order._id}`,
+          }
+        ).catch(console.error);
       }
     }
 
@@ -247,6 +259,18 @@ export const submitPaymentProof = async (req: AuthRequest, res: Response) => {
 
         bundleOrder.paymentStatus = 'pending_verification';
         await bundleOrder.save();
+
+        sendPushToAdmins(
+          'Payment Verification Required',
+          'A new payment is waiting for verification.',
+          'payment',
+          '/admin/payments',
+          {
+            type: 'PAYMENT_VERIFICATION',
+            orderId: bundleOrder._id.toString(),
+            eventKey: `PAYMENT_VERIFICATION_${bundleOrder._id}`,
+          }
+        ).catch(console.error);
       }
     }
 

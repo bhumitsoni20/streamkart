@@ -5,6 +5,7 @@ import { Bundle } from '../models/Bundle';
 import { Coupon } from '../models/Coupon';
 import { Message } from '../models/Message';
 import { sendSuccess, sendError } from '../utils/response';
+import { sendPushNotification } from '../services/notification.service';
 import { 
   sendBundlePurchaseConfirmation, 
   sendPartialBundleDelivery, 
@@ -122,6 +123,22 @@ export const createBundleOrder = async (req: AuthRequest, res: Response) => {
       if (user) {
         await sendBundlePurchaseConfirmation(user.email, user.name, bundle.title);
       }
+
+      // Notify seller with push & in-app notification
+      await sendPushNotification(
+        bundle.seller.toString(),
+        'New Order Received',
+        `A customer purchased bundle: ${bundle.title}.`,
+        'order',
+        `/dashboard/chats/${order._id}`,
+        {
+          type: 'NEW_ORDER',
+          orderId: order._id.toString(),
+          productId: bundle._id.toString(),
+          chatId: order._id.toString(),
+          eventKey: `NEW_ORDER_${order._id}`,
+        }
+      );
 
       return sendSuccess(res, order, 'Bundle order created.', 201);
   } catch (error: any) {
@@ -325,6 +342,21 @@ export const deliverBundleCredential = async (req: AuthRequest, res: Response) =
     } catch (e) {
       console.error('Socket emit failed:', e);
     }
+
+    // Send push notification to buyer
+    sendPushNotification(
+      order.user.toString(),
+      allDelivered ? 'Bundle Order Completed!' : 'Bundle Credentials Updated',
+      allDelivered ? 'Your complete bundle has been delivered. Check your chat.' : 'Seller updated bundle credentials. Check your order chat.',
+      'order',
+      `/dashboard/chats/${order._id}`,
+      {
+        type: 'ORDER_DELIVERED',
+        orderId: order._id.toString(),
+        chatId: order._id.toString(),
+        eventKey: `BUNDLE_DELIVERED_${order._id}_${Date.now()}`,
+      }
+    ).catch(console.error);
 
     return sendSuccess(res, order);
   } catch (error: any) {

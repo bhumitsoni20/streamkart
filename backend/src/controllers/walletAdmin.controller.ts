@@ -128,7 +128,12 @@ export const approveWalletTopup = async (req: AuthRequest, res: Response) => {
       topup.user.toString(),
       'Wallet Top-Up Approved! 🎉',
       `₹${topup.amount} has been successfully credited to your StreamKart Wallet. Current balance: ₹${user.walletBalance}`,
-      'payment'
+      'payment',
+      '/dashboard/wallet',
+      {
+        type: 'WALLET_TOPUP_APPROVED',
+        eventKey: `WALLET_TOPUP_${topup._id}`,
+      }
     ).catch(console.error);
 
     return sendSuccess(res, { topup, newBalance: user.walletBalance }, 'Wallet top-up approved and balance credited successfully.');
@@ -158,11 +163,10 @@ export const rejectWalletTopup = async (req: AuthRequest, res: Response) => {
     topup.verifiedBy = req.user._id;
     await topup.save();
 
-    // Real-time socket notification to buyer
+    // Emit live socket event to the user
     try {
       const io = getIO();
       const userIdStr = topup.user.toString();
-
       io.to(`user_${userIdStr}`).emit('wallet_topup_rejected', {
         topupId: topup._id,
         amount: topup.amount,
@@ -177,7 +181,12 @@ export const rejectWalletTopup = async (req: AuthRequest, res: Response) => {
       topup.user.toString(),
       'Wallet Top-Up Rejected',
       `Your wallet top-up of ₹${topup.amount} was rejected: ${topup.rejectionReason}`,
-      'payment'
+      'payment',
+      '/dashboard/wallet',
+      {
+        type: 'WALLET_TOPUP_REJECTED',
+        eventKey: `WALLET_TOPUP_REJ_${topup._id}`,
+      }
     ).catch(console.error);
 
     return sendSuccess(res, topup, 'Wallet top-up rejected.');

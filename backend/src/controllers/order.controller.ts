@@ -129,12 +129,20 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
         }
       }
 
-      // Notify seller
+      // Notify seller with push & in-app notification
       await sendPushNotification(
         product.seller.toString(),
-        'New Order!',
-        `You received a new order for ${product.title} (Paid via Wallet)`,
-        'order'
+        'New Order Received',
+        `A customer purchased ${product.title}.`,
+        'order',
+        `/dashboard/chats/${order._id}`,
+        {
+          type: 'NEW_ORDER',
+          orderId: order._id.toString(),
+          productId: product._id.toString(),
+          chatId: order._id.toString(),
+          eventKey: `NEW_ORDER_${order._id}`,
+        }
       );
 
       return sendSuccess(res, order, 'Order placed successfully.', 201);
@@ -430,13 +438,21 @@ export const sendOrderMessage = async (req: AuthRequest, res: Response) => {
       if (buyerIdStr) io.to(`user_${buyerIdStr}`).emit('new_message', populatedMessage);
     } catch (e) {}
 
-    // Send push notification to the other party
+    // Send push notification to the other party (protecting private message contents)
     const recipientId = isOwner ? order.seller : order.user;
+    const senderName = req.user?.name || 'User';
     await sendPushNotification(
       recipientId.toString(),
       'New Message',
-      content.length > 50 ? content.substring(0, 50) + '...' : content,
-      'system'
+      `${senderName} sent you a message on StreamKart.`,
+      'system',
+      `/dashboard/chats/${order._id}`,
+      {
+        type: 'NEW_MESSAGE',
+        orderId: order._id.toString(),
+        chatId: order._id.toString(),
+        senderId: req.user._id.toString(),
+      }
     );
 
     return sendSuccess(res, populatedMessage, 'Message sent', 201);
@@ -524,7 +540,14 @@ export const deliverOrderCredentials = async (req: AuthRequest, res: Response) =
       order.user.toString(),
       'Order Delivered!',
       'Your credentials have been securely delivered. Check your order chat.',
-      'order'
+      'order',
+      `/dashboard/chats/${order._id}`,
+      {
+        type: 'ORDER_DELIVERED',
+        orderId: order._id.toString(),
+        chatId: order._id.toString(),
+        eventKey: `ORDER_DELIVERED_${order._id}`,
+      }
     ).catch(console.error);
 
     return sendSuccess(res, order, 'Credentials delivered successfully.');

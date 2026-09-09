@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiGet, apiPut } from '../../services/api';
 import NotificationCard from '../../components/cards/NotificationCard';
+import NotificationSettingsCard from '../../components/common/NotificationSettingsCard';
 import Button from '../../components/ui/Button';
 import { HiOutlineCheck } from 'react-icons/hi';
 import toast from 'react-hot-toast';
@@ -92,6 +93,11 @@ const Notifications = () => {
           ))}
         </div>
       )}
+
+      {/* Push Notification Preferences */}
+      <div className="mt-12">
+        <NotificationSettingsCard />
+      </div>
     </div>
   );
 };
