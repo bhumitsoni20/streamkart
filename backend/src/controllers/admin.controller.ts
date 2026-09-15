@@ -5,9 +5,12 @@ import { Product } from '../models/Product';
 import { Order } from '../models/Order';
 import { Transaction } from '../models/Transaction';
 import crypto from 'crypto';
+import mongoose from 'mongoose';
 import { sendSuccess, sendError, sendPaginated } from '../utils/response';
 import { firebaseAuth } from '../config/firebase';
 import { Cache } from '../utils/cache';
+import { sendPushNotification } from '../services/notification.service';
+import { logger } from '../utils/logger';
 
 // GET /api/admin/stats
 export const getDashboardStats = async (req: AuthRequest, res: Response) => {
@@ -95,6 +98,11 @@ export const getUsers = async (req: Request, res: Response) => {
 
     const filter: any = {};
     if (req.query.role) filter.role = req.query.role;
+    if (req.query.verificationStatus === 'verified') {
+      filter.isVerified = true;
+    } else if (req.query.verificationStatus === 'unverified') {
+      filter.isVerified = { $ne: true };
+    }
     if (req.query.search) {
       filter.$or = [
         { name: { $regex: req.query.search, $options: 'i' } },
@@ -103,12 +111,102 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 
     const [users, total] = await Promise.all([
-      User.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      User.find(filter)
+        .populate('verifiedBy', 'name email')
+        .populate('unverifiedBy', 'name email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       User.countDocuments(filter),
     ]);
 
     Cache.set(cacheKey, { users, total }, 300);
     return sendPaginated(res, users, page, limit, total);
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// PATCH /api/admin/sellers/:id/verify
+export const verifySeller = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return sendError(res, 'Invalid seller ID.', 400);
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return sendError(res, 'Seller not found.', 404);
+    }
+
+    user.isVerified = true;
+    user.verificationSource = 'admin';
+    user.verifiedAt = new Date();
+    user.verifiedBy = req.user._id;
+    user.unverifiedAt = undefined;
+    user.unverifiedBy = undefined;
+    await user.save();
+
+    Cache.clearAll();
+
+    // Isolated notification dispatch - FCM or in-app failure must not block verification
+    try {
+      await sendPushNotification(
+        user._id.toString(),
+        "You're Verified!",
+        'Your StreamKart seller account has been manually verified by the admin.',
+        'system',
+        '/dashboard/seller',
+        { eventKey: `seller_verified_${user._id}_${Date.now()}` }
+      );
+    } catch (notifErr: any) {
+      logger.warn(`Failed to dispatch verification notification to seller ${user._id}: ${notifErr?.message}`);
+    }
+
+    return sendSuccess(res, user, 'Seller verified successfully.');
+  } catch (error: any) {
+    return sendError(res, error.message);
+  }
+};
+
+// PATCH /api/admin/sellers/:id/unverify
+export const unverifySeller = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return sendError(res, 'Invalid seller ID.', 400);
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return sendError(res, 'Seller not found.', 404);
+    }
+
+    user.isVerified = false;
+    user.verificationSource = 'none';
+    user.unverifiedAt = new Date();
+    user.unverifiedBy = req.user._id;
+    await user.save();
+
+    Cache.clearAll();
+
+    // Isolated notification dispatch
+    try {
+      await sendPushNotification(
+        user._id.toString(),
+        'Verification Updated',
+        'Your StreamKart Verified status has been removed.',
+        'system',
+        '/dashboard/seller',
+        { eventKey: `seller_unverified_${user._id}_${Date.now()}` }
+      );
+    } catch (notifErr: any) {
+      logger.warn(`Failed to dispatch unverification notification to seller ${user._id}: ${notifErr?.message}`);
+    }
+
+    return sendSuccess(res, user, 'Seller verification removed successfully.');
   } catch (error: any) {
     return sendError(res, error.message);
   }
@@ -130,7 +228,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
 
     const [products, total] = await Promise.all([
       Product.find(filter)
-        .populate('seller', 'name email')
+        .populate('seller', 'name email avatar isVerified verificationSource')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)

@@ -80,9 +80,15 @@ const SellerDashboard = () => {
               <h1 className="text-[24px] sm:text-[26px] font-extrabold text-[#0F172A] tracking-[-0.02em]">
                 {user?.name || 'Seller Central'}
               </h1>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]">
-                <HiCheckCircle className="w-3.5 h-3.5 text-[#10B981]" /> Verified Merchant
-              </span>
+              {Boolean(user?.isVerified || orders.filter(o => o.paymentStatus === 'paid' || o.orderStatus === 'completed').length >= 5) ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]">
+                  <HiCheckCircle className="w-3.5 h-3.5 text-[#10B981]" /> Verified Merchant
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+                  Standard Merchant
+                </span>
+              )}
             </div>
             <p className="text-[#64748B] text-[14px]">
               Here is your digital storefront performance and live customer order pipeline.

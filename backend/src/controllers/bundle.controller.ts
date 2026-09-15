@@ -59,7 +59,7 @@ export const getAdminBundles = async (req: AuthRequest, res: Response) => {
 
     const [bundles, total] = await Promise.all([
       Bundle.find(filter)
-        .populate('seller', 'name email avatar')
+        .populate('seller', 'name email avatar role isVerified verificationSource')
         .populate('products.masterProduct', 'name imageUrl')
         .sort(sort)
         .skip(skip)
@@ -124,7 +124,7 @@ export const getBundles = async (req: Request, res: Response) => {
 
     const [bundles, total] = await Promise.all([
       Bundle.find(filter)
-        .populate('seller', 'name avatar')
+        .populate('seller', 'name avatar email role isVerified verificationSource')
         .populate('products.masterProduct', 'name imageUrl')
         .sort(sort)
         .skip(skip)
@@ -145,7 +145,7 @@ export const getBundles = async (req: Request, res: Response) => {
 export const getBundle = async (req: Request, res: Response) => {
   try {
     const bundle = await Bundle.findById(req.params.id)
-      .populate('seller', 'name avatar email')
+      .populate('seller', 'name avatar email role isVerified verificationSource')
       .populate('products.masterProduct', 'name imageUrl')
       .lean();
       

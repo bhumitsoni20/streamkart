@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { HiHeart, HiOutlineHeart, HiShoppingCart, HiLightningBolt } from 'react-icons/hi';
 import Badge from '../ui/Badge';
+import VerifiedBadge from '../common/VerifiedBadge';
 import useCart from '../../hooks/useCart';
 import useWishlistStore from '../../store/wishlistStore';
 
@@ -9,7 +10,9 @@ const ProductCard = ({ product }) => {
   const { toggleItem, isInWishlist } = useWishlistStore();
   const liked = isInWishlist(product._id);
 
-  const isVerifiedSeller = (product.seller?.totalSales || 0) >= 5 || product.seller?.role === 'seller';
+  const isVerifiedSeller = Boolean(
+    product.seller?.isVerified === true || (product.seller?.totalSales || 0) >= 5
+  );
 
   return (
     <div className="group bg-white border border-slate-200/90 rounded-[24px] overflow-hidden transition-all duration-300 hover:shadow-[0_16px_36px_-8px_rgba(91,75,255,0.12)] hover:border-[#5B4BFF]/40 hover:-translate-y-1 flex flex-col p-4 relative">
@@ -40,12 +43,7 @@ const ProductCard = ({ product }) => {
       {/* Badges and Actions */}
       {isVerifiedSeller && (
         <div className="absolute top-6 right-6">
-          <div className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wide flex items-center gap-1 border border-emerald-200/80 shadow-xs">
-            <svg className="w-2.5 h-2.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-            </svg>
-            Verified
-          </div>
+          <VerifiedBadge seller={product.seller} size="xs" />
         </div>
       )}
 

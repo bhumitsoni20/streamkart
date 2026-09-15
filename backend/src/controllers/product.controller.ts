@@ -59,7 +59,7 @@ export const getProducts = async (req: Request, res: Response) => {
     }
 
     const [products, total] = await Promise.all([
-      Product.find(filter).populate('seller', 'name avatar').sort(sort).skip(skip).limit(limit).lean(),
+      Product.find(filter).populate('seller', 'name avatar email role isVerified verificationSource').sort(sort).skip(skip).limit(limit).lean(),
       Product.countDocuments(filter),
     ]);
 
@@ -74,7 +74,7 @@ export const getProducts = async (req: Request, res: Response) => {
 // GET /api/products/:id
 export const getProduct = async (req: Request, res: Response) => {
   try {
-    const product = await Product.findById(req.params.id).populate('seller', 'name avatar email').lean();
+    const product = await Product.findById(req.params.id).populate('seller', 'name avatar email role isVerified verificationSource').lean();
     if (!product) return sendError(res, 'Product not found.', 404);
 
     if (product.seller) {

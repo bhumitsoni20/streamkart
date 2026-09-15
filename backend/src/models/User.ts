@@ -11,6 +11,11 @@ export interface IUser extends Document {
   approvedAt?: Date;
   avatar?: string;
   isVerified: boolean;
+  verificationSource?: 'none' | 'automatic' | 'admin';
+  verifiedAt?: Date;
+  verifiedBy?: mongoose.Types.ObjectId;
+  unverifiedAt?: Date;
+  unverifiedBy?: mongoose.Types.ObjectId;
   fcmToken?: string;
   badReviewCount: number;
   suspensionExpiry?: Date;
@@ -76,6 +81,25 @@ const userSchema = new Schema<IUser>(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    verificationSource: {
+      type: String,
+      enum: ['none', 'automatic', 'admin'],
+      default: 'none',
+    },
+    verifiedAt: {
+      type: Date,
+    },
+    verifiedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    unverifiedAt: {
+      type: Date,
+    },
+    unverifiedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
     fcmToken: {
       type: String,

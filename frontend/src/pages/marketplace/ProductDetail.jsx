@@ -28,6 +28,7 @@ import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
 import ReviewCard from '../../components/cards/ReviewCard';
 import Avatar from '../../components/ui/Avatar';
+import VerifiedBadge from '../../components/common/VerifiedBadge';
 import { SpotlightCard } from '../../components/reactbits';
 
 const ProductDetail = () => {
@@ -121,7 +122,9 @@ const ProductDetail = () => {
   }
 
   const isSoldOut = product.status === 'sold';
-  const isVerifiedSeller = (product.seller?.totalSales || 0) >= 5 || product.seller?.role === 'seller';
+  const isVerifiedSeller = Boolean(
+    product.seller?.isVerified === true || (product.seller?.totalSales || 0) >= 5
+  );
 
   return (
     <div className="min-h-screen bg-[#FAFBFF] pt-24 pb-20">
@@ -380,10 +383,7 @@ const ProductDetail = () => {
                   <div className="flex items-center gap-2">
                     <p className="text-[#0F172A] font-extrabold text-[16px]">{product.seller?.name || 'Seller'}</p>
                     {isVerifiedSeller && (
-                      <span className="bg-emerald-50 text-emerald-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-0.5">
-                        <HiCheckCircle className="w-3 h-3 text-emerald-600" />
-                        Verified
-                      </span>
+                      <VerifiedBadge seller={product.seller} size="xs" />
                     )}
                   </div>
                   <p className="text-slate-500 text-xs mt-0.5">Trusted Digital Asset Merchant</p>

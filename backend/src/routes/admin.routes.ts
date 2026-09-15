@@ -4,6 +4,8 @@ import {
   getUsers,
   updateUserRole,
   deleteUser,
+  verifySeller,
+  unverifySeller,
   getAllProducts,
   updateProductStatus,
   deleteProduct,
@@ -26,6 +28,12 @@ router.post('/reconcile-earnings', reconcileEarnings);
 router.get('/stats', getDashboardStats);
 router.get('/users', getUsers);
 router.put('/users/:id/role', updateUserRole);
+router.patch('/sellers/:id/verify', verifySeller);
+router.patch('/sellers/:id/unverify', unverifySeller);
+router.patch('/users/:id/verify', verifySeller);
+router.patch('/users/:id/unverify', unverifySeller);
+router.put('/sellers/:id/verify', verifySeller);
+router.put('/sellers/:id/unverify', unverifySeller);
 router.delete('/users/:id', deleteUser);
 router.get('/products', getAllProducts);
 router.put('/products/:id/status', updateProductStatus);
@@ -34,9 +42,4 @@ router.get('/orders', getAllOrders);
 router.get('/applications', getApplications);
 router.put('/applications/:id/status', updateApplicationStatus);
 
-
-
 export default router;
-// trigger restart
-
-
